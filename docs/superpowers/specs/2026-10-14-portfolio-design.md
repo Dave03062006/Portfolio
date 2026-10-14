@@ -1,0 +1,290 @@
+# Portfolio site: design
+
+**Owner:** Dave Tristian Nurcahyo
+**Date:** 2026-10-14
+**Status:** Design approved in brainstorming. This document is waiting for Dave's review.
+
+## In plain words
+
+This is a one-page portfolio site for Dave. As you scroll, his DT logo turns, comes apart and brings one piece forward per section, like the AirPods Pro page on apple.com. The logo's pieces are also the site's table of contents:
+
+| Logo part | Stands for | Section |
+|---|---|---|
+| **D** | Developer: what he builds | Projects |
+| **T** | Team: how he leads | Experience |
+| **Core** (the glowing chip inside) | Always learning: what powers both | About |
+
+The look is black with neon-red accents, styled like a product teardown: labels with thin leader lines, monospace captions, a faint grid and a numbered chapter list. Claude builds the whole site. Afterwards, Claude writes `docs/code-tour.md`, a guide that teaches React using this site's own code.
+
+## 1. Goals and non-goals
+
+**Goals**
+- Within about a minute, a recruiter knows who Dave is, what he built (and which part was his), and how his leadership grew. Contacting him takes one click.
+- It feels distinctive and personal, not like a template. Every animation means something.
+- Dave can update text, projects and experience by editing data files, without touching layout code.
+- Text is readable before the 3D loads. The site works with reduced motion, keyboard-only use, phones, and browsers without 3D support.
+- The code is readable for a React beginner.
+
+**Non-goals (not building these)**
+- Blog, multiple pages, CMS or backend
+- Contact form (the email link and a copy button cover it)
+- Bahasa Indonesia version. The site is English only, but Indonesian names like *Kepanitiaan*, *UKM* and *O-Week* stay as they are.
+- Light mode, custom cursor, sound, analytics
+
+## 2. Brand
+
+### 2.1 Logo: "Solid Mark"
+
+A DT monogram made of two machined pieces that meet along an angled seam. The D has a window cut into it.
+
+Geometry on a 200×200 grid, as SVG path data:
+
+| Piece | Path |
+|---|---|
+| D (outer) | `M24,44 H92 L120,72 V128 L92,156 H24 Z` |
+| D window (hole) | `M48,68 V132 H84 L96,120 V80 L84,68 Z` |
+| T | `M97.66,44 H174.34 V68 H148 V156 H124 V68 H121.66 Z` |
+
+The seam is 4 units wide. The T's left edge is the D's top-right chamfer moved 4 units outward, and the T's stem starts 4 units right of the D.
+
+**Versions**
+- **Flat** (navbar, favicon, CV): one color, `#ff2d3d`, with the window cut out so the background shows through. No white version. White disappears on light-mode browser tabs.
+- **3D**: dark brushed-metal pieces. Red light leaks out of the seam and the D's window. A glowing "core" chip sits between the pieces and is visible when the logo comes apart.
+
+**Meaning (keep consistent everywhere):** D = Developer → Projects. T = Team → Experience. Core = Always learning → About. Labels must always point at the part they describe.
+
+### 2.2 Colors (CSS variables in `src/styles/tokens.css`)
+
+| Token | Value | Use |
+|---|---|---|
+| `--bg` | `#050505` | page background |
+| `--surface` | `#0a0a0c` | cards |
+| `--line` | `#1c1c20` | dividers, grid |
+| `--line-strong` | `#2a2a2f` | chip and pill borders |
+| `--text` | `#f4f4f5` | headings, primary text |
+| `--text-2` | `#a6a6ae` | body text |
+| `--text-3` | `#5d5d65` | inactive chapter labels, captions |
+| `--red` | `#ff2d3d` | brand, accents, active states |
+| `--red-label` | `#ff4d5b` | monospace labels |
+| `--red-hot` | `#ffb1b8` | hottest part of glows |
+
+Red on black has a contrast of about 5.7:1. Use it for labels, accents and large text, never for long body text.
+
+### 2.3 Type
+
+- **Headings:** Archivo, expanded width (`font-stretch: 125%`), weight 800
+- **Body:** Archivo, normal width, weights 400 and 600
+- **Labels and metadata:** JetBrains Mono, uppercase, letter-spaced
+
+Fonts are self-hosted through Fontsource packages, so there are no Google Fonts requests while the site runs.
+
+## 3. Content and sections
+
+The site is one page with five chapters. The chapter list reads **01 Intro, 02 About, 03 Projects, 04 Experience, 05 Contact**. The top bar shows the flat logo, `DT / PORTFOLIO` and an **"Open to internships"** pill.
+
+### 3.1 Intro
+
+- **Name:** DAVE TRISTIAN / NURCAHYO (on two lines)
+- **Meta line:** IMT · FULL STACK DEVELOPMENT · UNIVERSITAS CIPUTRA · CLASS OF 2028
+- **One-liner:** "I build apps for iPhone, Android and the web, and I lead the teams that run campus events."
+- **Scroll cue:** `SCROLL ↓`
+- **Exploded-view labels**, shown after the first scroll as HTML text with SVG leader lines:
+  - **D · DEVELOPER:** Swift · Kotlin · TypeScript
+  - **T · TEAM:** SU IMT · O-Week · UKM Tabletop · TA
+  - **CORE · ALWAYS LEARNING:** Informatics @ UC · GPA 3.77
+
+### 3.2 About (the core)
+
+- **Eyebrow:** `02 · ABOUT · CORE`. **Heading:** "Always learning."
+- **Bio:** "I'm a 5th-semester Informatics student at Universitas Ciputra Surabaya, focusing on Full Stack Development. I started with HTML and CSS in 2023 and kept going: Swift, Kotlin, Laravel, and now React, which this site is built with."
+- **Photo:** placeholder until Dave adds `public/images/portrait.jpg` (4:5)
+- **Spec sheet:**
+
+| Label | Value |
+|---|---|
+| STUDYING | Information & Multimedia Technology · FSD · 2024–2028 |
+| GPA | 3.77 / 4.00 |
+| CODE | Swift · Kotlin · TypeScript · JavaScript · Laravel · HTML/CSS |
+| LEARNING | React · Next.js · Chinese · Korean |
+| SPEAKS | Indonesian · English |
+| PLAYS | Guitar · Bass · Drums · Piano · Recorder |
+| AWARD | 2nd Place, Anti-Drug Ambassador 2025/26 |
+
+### 3.3 Projects (the D)
+
+- **Eyebrow:** `03 · PROJECTS · D`. **Heading:** "D for Developer."
+- **Lead:** "Mostly team projects, so each one says which part was mine."
+- Every card shows a **MY PART** line. Screenshots are placeholders until Dave adds `public/images/projects/<slug>.jpg` (16:10).
+
+| Size | Project | Tagline | Tags | Description | My part | Links |
+|---|---|---|---|---|---|---|
+| Large | **ALP_VP** | Gamer spending tracker | Android, Kotlin, TypeScript, Prisma | Gamers log what they spend on each game. Keeping it up earns points to spend in a gacha or on vouchers. | All of it: the backend, the Android app, and the API that connects them. | [App code](https://github.com/Dave03062006/ALP_VP_Frontend), [API code](https://github.com/Dave03062006/ALP_Backend) |
+| Medium | **Larva** | Fitness, for iPhone + Apple Watch | Swift, watchOS, Firebase | Strava meets Duolingo: track steps and workouts, earn points for cosmetic effects, climb the friends leaderboard. | All front-end design, the leaderboard and shop screens, and the logic that applies unlocked customizations. | [Code](https://github.com/E-Fredrik/Larva) |
+| Medium | **Imperial Kost** | Boarding house website | Next.js, TypeScript, Vercel | Room listings with 360° views and a map for a kost in Surabaya. | The interactive map. | [Live site](https://imperialf7.vercel.app), [Code](https://github.com/E-Fredrik/imperialStatic) |
+| Small | **ShutterSpace** | Fiverr for photographers | iOS, UIKit, Firebase, Midtrans | A marketplace for booking photographers. | Front-end design support. | [Code](https://github.com/E-Fredrik/ShutterSpace) |
+| Small | **ALP-OOP** | Java clinic system | Java | Booking, prescriptions and medical history. A binary search tree finds free appointment slots. | Booking, appointment and stock functions. | [Code](https://github.com/Dave03062006/ALP-OOP) |
+
+Three cards show their course as a small caption: Larva was the final project for Mobile Application Development, ShutterSpace for Software Engineering, and Imperial Kost for Website Development (built with a partner). ALP_VP and ALP-OOP have no caption unless Dave adds one in `projects.ts`.
+
+### 3.4 Experience (the T)
+
+- **Eyebrow:** `04 · EXPERIENCE · T`. **Heading:** "T for Team."
+- **Filter tabs:** ALL · ORGANIZATIONS · KEPANITIAAN · TEACHING (default: ALL)
+- **Timeline**, oldest first so it reads as a climb. The latest role is marked **NOW**.
+
+| # | When | Type | Role · Where | Detail |
+|---|---|---|---|---|
+| 1 | 2024–25 | Organization | Intern, IMT Pulse · Student Union IMT | Event division: timekeeper, MC and event organizer. |
+| 2 | 2025 | Kepanitiaan | SID Division Member · O-Week UC | Kept new students' discipline and the event flow on track, and mobilized students between sessions. |
+| 3 | Jun 2025 – Jun 2026 | Organization (+ committees) | Internal Division · Student Union IMT | Committee chips: **Head** · Technocamp 2025 (IMT x ISB Camp); **Event Coordinator** · NPLC 13th (national programming competition); core committee: Dean's Cup 2025, Hackfest 2025, Inauguration Night IMT x ISB, IMT Pulse 2025. |
+| 4 | 2025–26 | Teaching | Teaching Assistant, E1 · Universitas Ciputra | Prepared course materials, led class sessions and ran ice-breakers. |
+| 5 | Apr – Aug 2026 | Kepanitiaan | SID Division Coordinator · O-Week UC | Coordinated the division, managed student information and kept operations running during orientation week. |
+| 6 | Now | Organization | Head of UKM Tabletop · Universitas Ciputra | Leading the club: running its events and building its community. |
+
+**Filter rule:** an entry shows when its type matches the active tab. The Student Union entry (#3) also shows under KEPANITIAAN, because the events it ran were committees. In that tab it shows only its committee chips.
+
+### 3.5 Contact
+
+- **Eyebrow:** `05 · CONTACT`. **Heading:** "Let's build something."
+- **Lead:** "Open to internships and collaborations. The fastest way to reach me is email."
+
+| Label | Shows | Action |
+|---|---|---|
+| EMAIL | dtristian@student.ciputra.ac.id | `mailto:` link, plus a COPY button that shows "Copied ✓" |
+| LINKEDIN | dave-nurcahyo-b7780a323 | https://www.linkedin.com/in/dave-nurcahyo-b7780a323 |
+| GITHUB | Dave03062006 | https://github.com/Dave03062006 |
+| INSTAGRAM | @dave_tristian.n | https://www.instagram.com/dave_tristian.n |
+
+- **DOWNLOAD CV ↓** links to `/cv.pdf`. Dave drops his CV PDF into `public/`. The button hides when `profile.cvUrl` is empty.
+- **No phone number** on the site.
+- **Footer:** "Designed and built by Dave Tristian · 2026 · Made with React"
+
+## 4. Layout
+
+- **Desktop (1024px and wider):** a fixed chapter list on the left, a content column of about 42% of the width, and a sticky 3D stage on the right (about 38%) with a faint grid behind it. The top bar is fixed.
+- **Tablet (768–1023px):** the chapter list moves into the top bar as "03 PROJECTS" with a menu button. The content column gets wider and the stage gets smaller.
+- **Phone (under 768px):** the top bar shows the current chapter, and its menu button opens a sheet with all five chapters. The 3D canvas is pinned to roughly the top 40% of the screen. Each section starts with a see-through spacer, so its logo state is visible, and then its content scrolls up over the logo on a solid background.
+
+## 5. The 3D logo
+
+- **Geometry:** the logo paths become `THREE.Shape`s, then `ExtrudeGeometry` with a depth of about 24 units on the 200 grid and a small bevel for machined edges. The D window is a red emissive plane set behind the hole. The seam is a thin emissive strip that follows the seam path. The core is a chip-shaped box with a grid of glowing squares on its face.
+- **Materials:** the metal is near-black (`#2a2a30`) with high metalness (about 0.9) and medium roughness (about 0.35). The glowing parts use `#ff2d3d`, emissive and not tone-mapped, so that bloom catches them.
+- **Lighting:** a procedural studio environment (drei `Environment` with `Lightformer`s), so there's no HDR file to download, plus a red rim light from behind.
+- **Post-processing:** bloom (`@react-three/postprocessing`) with a luminance threshold, so only the emissive red parts glow.
+- **Pose model:** at any moment the logo's state is
+  `{ rotX, rotY, explode: 0–1, focus: 'none' | 'core' | 'D' | 'T', focusAmount: 0–1, glow: 0–1 }`.
+  Poses are keyframes in `src/motion/choreography.ts`, and scroll progress interpolates between them.
+- **Mouse tilt:** on desktop with a mouse, the logo tilts up to about 4° toward the cursor, smoothed. It's off for touch screens and reduced motion.
+- **Performance:** device pixel ratio is capped to [1, 2]. Rendering pauses when the tab is hidden or the canvas is off screen. The 3D code is loaded lazily, in its own chunk after first paint, and the flat SVG logo shows until it's ready.
+
+## 6. Motion
+
+### 6.1 Choreography (tied to scroll position)
+
+| Moment | What happens |
+|---|---|
+| Page load | The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. |
+| Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
+| About | Focus on the **core**: its glow rises while the D and T dim and move back. |
+| Projects | Focus on the **D**: it moves toward the viewer with a red edge light. The T and core dim. |
+| Experience | Focus on the **T**: same treatment. |
+| Contact | The pieces reassemble, decelerating into place. The glow peaks and the logo faces front. |
+
+Every scroll animation uses GSAP ScrollTrigger with `scrub` and light smoothing (about 0.6 s). It stops when scrolling stops and rewinds exactly when scrolling back. There's no snapping.
+
+**Small feedback:** the chapter list's red marker slides to the active chapter (about 250 ms). Project cards get a red border and a brighter screenshot on hover. COPY becomes "Copied ✓" for 1.5 s. UI transitions take 200–400 ms with one "ease-out" curve family (`power3.out`).
+
+### 6.2 Rules
+
+- Motion has to mean something: it tells the logo story or answers something the visitor did.
+- Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, bouncy or overshooting easing, and scroll-jacking. The scroll wheel always behaves normally.
+- Content never waits for an animation. All text is in the HTML and readable right away.
+
+### 6.3 Reduced motion and fallbacks
+
+- **`prefers-reduced-motion`:** the 3D logo still renders, but it never moves through space. Each section has a fixed pose: assembled for Intro and Contact, exploded with that section's part highlighted for About, Projects and Experience. Changing sections swaps poses with a short crossfade (fade out, switch pose, fade in, about 200 ms each). There's no flicker, no rotation and no mouse tilt, and leader lines and labels appear without drawing in.
+- **No WebGL or 3D error:** an error boundary swaps in the flat SVG drawings of each state, the same ones used in the mockups.
+- **Hidden tab:** rendering pauses.
+
+## 7. Navigation and accessibility
+
+- The chapter list is a `<nav>` of anchor links (`#intro`, `#about`, `#projects`, `#experience`, `#contact`). The active chapter gets `aria-current`. Clicking scrolls smoothly, or instantly with reduced motion.
+- A "Skip to content" link is the first thing focusable.
+- Everything interactive works with the keyboard and shows a visible focus ring (2 px red outline with offset).
+- The 3D canvas is decorative (`aria-hidden`). Everything it shows is also in HTML text, and the labels are HTML, not drawn in WebGL.
+- The timeline filters are toggle buttons (`aria-pressed`).
+- The COPY button uses the Clipboard API, with a fallback that selects the text. It announces "Copied" through an `aria-live` region.
+- Contrast meets WCAG AA. Images have alt text.
+
+## 8. Code architecture
+
+**Tools:** Vite, React, TypeScript, React Three Fiber with drei and postprocessing, GSAP with ScrollTrigger and `@gsap/react`, CSS Modules with global CSS variables, Vitest, and ESLint.
+
+```
+src/
+  content/       profile.ts, projects.ts, experience.ts, types.ts   ← edit these to update the site
+  sections/      Intro.tsx, About.tsx, Projects.tsx, Experience.tsx, Contact.tsx
+  components/    TopBar, ChapterRail, ChapterSheet (phone), ProjectCard, SpecSheet,
+                 TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image)
+  three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
+                 shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states)
+  motion/        choreography.ts (pose keyframes + interpolation, pure functions),
+                 useScrollStory.ts (ScrollTrigger setup), ChapterContext.tsx (active chapter)
+  styles/        tokens.css, global.css
+  App.tsx
+public/          images/, cv.pdf, favicon.svg
+docs/            superpowers/specs/ (this file), code-tour.md
+```
+
+**Data flow**
+- Content files → section components → cards and rows. Adding a project means adding one object to `projects.ts`.
+- Scroll → `useScrollStory` → one shared "story" value `{ chapter, progress }`:
+  - The **chapter** goes into React state through `ChapterContext`. It only changes when a section boundary is crossed, which re-renders the chapter list and top bar.
+  - The **progress** goes into a ref that the 3D render loop reads every frame. No React re-renders happen per frame.
+
+**Error handling:** WebGL detection and an error boundary around the canvas fall back to the SVG logo. `ImageSlot` shows a styled placeholder when an image is missing. Missing optional links (like `cvUrl`) hide their button.
+
+## 9. Testing and verification
+
+- `npm run check`: TypeScript (`tsc --noEmit`) and ESLint
+- **Vitest unit tests:**
+  - choreography: the pose at each keyframe, interpolation, clamping outside 0–1
+  - experience filter rule, including the Student Union entry showing under KEPANITIAAN
+  - content sanity: every project has a "my part" line and valid link URLs
+- `npm run build` must pass.
+- **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
+- **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.
+
+## 10. Setup and deployment
+
+- **Location:** `C:\Users\DAVE TRISTIAN\Projects\portfolio`, outside OneDrive so `node_modules` doesn't sync.
+- **Git:** this repo. `.gitignore` covers `node_modules/`, `dist/`, `.superpowers/` and `.env*`.
+- **Hosting:** GitHub repo → Vercel, which deploys automatically on every push to `main`. Dave signs in to both, and the code tour walks him through it. The free URL looks like `<name>.vercel.app`.
+- **Meta:** title "Dave Tristian Nurcahyo · Portfolio", a description, an Open Graph preview image (the logo with his name), and favicons from the flat logo (SVG plus PNG fallbacks).
+
+## 11. Assets Dave adds later (placeholders until then)
+
+- `public/images/portrait.jpg` (4:5)
+- `public/images/projects/alp-vp.jpg`, `larva.jpg`, `imperial-kost.jpg`, `shutterspace.jpg`, `alp-oop.jpg` (16:10)
+- `public/cv.pdf`
+
+## 12. The code tour (delivered after the build)
+
+`docs/code-tour.md` teaches React using this codebase:
+- components and JSX (the sections)
+- props (`ProjectCard`)
+- lists and keys (the projects list)
+- state (`TimelineFilters`)
+- effects and cleanup (`CopyButton`, scroll setup)
+- refs (per-frame 3D updates)
+- context (the active chapter)
+- conditional rendering (optional links)
+- TypeScript types for content
+- the basics of React Three Fiber and GSAP ScrollTrigger
+
+It ends with step-by-step recipes: add a project, add an experience, change the red, swap in photos, and deploy.
+
+## 13. Notes
+
+- The email is a student address, which may stop working after graduation. It lives in one place (`profile.ts`), so it's easy to change later.
+- The brainstorming mockups are in `OneDrive\Documents\Personal Project\Profile\.superpowers\brainstorm\` for reference.
