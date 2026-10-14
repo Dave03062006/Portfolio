@@ -20,6 +20,7 @@ import {
   type PointLight,
   type Shape,
 } from 'three'
+import { BRAND } from '../brand/colors'
 import type { LogoPart } from '../content/types'
 import { TEARDOWN } from '../motion/choreography'
 import type { Pose } from '../motion/pose'
@@ -39,8 +40,8 @@ export type StageState = {
 }
 
 const BEVEL = 0.012
-const RED = new Color('#ff2d3d')
-const HOT = new Color('#ffc2c7')
+const RED = new Color(BRAND.red)
+const HOT = new Color(BRAND.hot)
 const scratch = new Vector3()
 
 /** Turns a flat logo shape into a solid 3D piece, centred on depth 0. */
@@ -66,9 +67,9 @@ function createWindowTexture(): CanvasTexture {
   canvas.width = canvas.height = size
   const context = canvas.getContext('2d')!
   const gradient = context.createRadialGradient(size * 0.42, size / 2, 0, size * 0.42, size / 2, size * 0.75)
-  gradient.addColorStop(0, '#ff3a4a')
-  gradient.addColorStop(0.55, '#b8001b')
-  gradient.addColorStop(1, '#3d0008')
+  gradient.addColorStop(0, BRAND.window[0])
+  gradient.addColorStop(0.55, BRAND.window[1])
+  gradient.addColorStop(1, BRAND.window[2])
   context.fillStyle = gradient
   context.fillRect(0, 0, size, size)
   const texture = new CanvasTexture(canvas)

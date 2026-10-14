@@ -51,6 +51,7 @@ export function Stage() {
   const [supports3D] = useState(canUseWebGL)
   const [load3D, setLoad3D] = useState(false)
   const [show3D, setShow3D] = useState(false)
+  const [flatRetired, setFlatRetired] = useState(false)
 
   // Start loading the 3D logo only once the browser is idle, after the page's text is up,
   // so phones show the content as fast as possible. The flat logo covers the wait.
@@ -64,7 +65,7 @@ export function Stage() {
     const timer = window.setTimeout(start, 1200) // Safari has no requestIdleCallback
     return () => window.clearTimeout(timer)
   }, [supports3D])
-  const [flatRetired, setFlatRetired] = useState(false)
+
   const onReady = useCallback(() => setShow3D(true), [])
   const on3DError = useCallback(() => {
     setShow3D(false)

@@ -1,3 +1,5 @@
+import { BRAND } from '../brand/colors'
+
 type Lamp = {
   color: string
   intensity: number
@@ -14,8 +16,8 @@ const LAMPS: Lamp[] = [
   { color: '#ffffff', intensity: 1.8, position: [-4, 0.8, 2] },
   { color: '#ffffff', intensity: 1.8, position: [4, 0.8, 2] },
   // red from below and behind: the neon bounce and rim on every edge
-  { color: '#ff2d3d', intensity: 7, position: [0, -3.2, 1.5] },
-  { color: '#ff2d3d', intensity: 9, position: [0, 0.6, -3] },
+  { color: BRAND.red, intensity: 7, position: [0, -3.2, 1.5] },
+  { color: BRAND.red, intensity: 9, position: [0, 0.6, -3] },
 ]
 
 /**

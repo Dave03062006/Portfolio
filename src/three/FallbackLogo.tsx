@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { BRAND } from '../brand/colors'
 import { D_OUTER, D_WINDOW, SEAM, T_OUTER, toPathData } from '../brand/logoPaths'
 import type { Pose } from '../motion/pose'
 import { CHIP_CELLS } from './chip'
@@ -40,9 +41,9 @@ export function FallbackLogo({ pose, ignite = false, className }: FallbackLogoPr
           <stop offset="1" stopColor="#141418" />
         </linearGradient>
         <radialGradient id={`${id}-window`} cx="0.42" cy="0.5" r="0.75">
-          <stop offset="0" stopColor="#ff3a4a" />
-          <stop offset="0.55" stopColor="#b8001b" />
-          <stop offset="1" stopColor="#3d0008" />
+          <stop offset="0" stopColor={BRAND.window[0]} />
+          <stop offset="0.55" stopColor={BRAND.window[1]} />
+          <stop offset="1" stopColor={BRAND.window[2]} />
         </radialGradient>
         <filter id={`${id}-glow`} x="-60%" y="-60%" width="220%" height="220%" colorInterpolationFilters="sRGB">
           <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="near" />
@@ -61,7 +62,7 @@ export function FallbackLogo({ pose, ignite = false, className }: FallbackLogoPr
       {/* Soft red haze behind everything */}
       <ellipse
         cx="130" cy="110" rx="110" ry="80"
-        fill="#ff1f35"
+        fill={BRAND.glow}
         filter={`url(#${id}-haze)`}
        
         style={{ opacity: layout.ambientGlow }}
@@ -71,20 +72,20 @@ export function FallbackLogo({ pose, ignite = false, className }: FallbackLogoPr
           The flicker sits on its own wrapper: a CSS animation would override the inline opacity. */}
       <g className={igniteClass}>
         <g style={{ opacity: layout.seamGlow, transform: 'translate(30px, 10px)' }}>
-          <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="6" filter={`url(#${id}-glow)`} />
-          <path d={SEAM_LINE} fill="none" stroke="#ff8a95" strokeWidth="3" />
+          <path d={SEAM_LINE} fill="none" stroke={BRAND.glow} strokeWidth="6" filter={`url(#${id}-glow)`} />
+          <path d={SEAM_LINE} fill="none" stroke={BRAND.neonCore} strokeWidth="3" />
         </g>
       </g>
 
       {/* The core chip, hidden between the pieces until they move apart */}
       <g style={{ opacity: core.opacity, transform: 'translate(122px, 82px)' }}>
-        <rect width="64" height="56" rx="4" fill="#ff1f35" filter={`url(#${id}-glow)`} style={{ opacity: core.glow }} />
-        <rect x="0.8" y="0.8" width="62.4" height="54.4" rx="4" fill="#24060a" stroke="#ff3a4a" strokeWidth="1.6" />
+        <rect width="64" height="56" rx="4" fill={BRAND.glow} filter={`url(#${id}-glow)`} style={{ opacity: core.glow }} />
+        <rect x="0.8" y="0.8" width="62.4" height="54.4" rx="4" fill={BRAND.chipFace} stroke={BRAND.chipCell} strokeWidth="1.6" />
         {CHIP_CELLS.map((cell) => (
           <rect
             key={`${cell.x}-${cell.y}`}
             x={cell.x} y={cell.y} width="6" height="6" rx="1"
-            fill={cell.hot ? '#ffc2c7' : '#ff3a4a'}
+            fill={cell.hot ? BRAND.hot : BRAND.chipCell}
             opacity="0.85"
           />
         ))}
@@ -92,23 +93,23 @@ export function FallbackLogo({ pose, ignite = false, className }: FallbackLogoPr
 
       {/* D */}
       <g style={{ opacity: d.opacity, transform: `translate(${d.x}px, ${d.y}px)` }}>
-        <path d={D_EDGE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: d.highlight }} />
+        <path d={D_EDGE} fill="none" stroke={BRAND.glow} strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: d.highlight }} />
         <path d={D_HOLE} fill={`url(#${id}-window)`} className={igniteClass} />
         <path d={D_SHAPE} fillRule="evenodd" fill={`url(#${id}-metal)`} stroke="#ffffff" strokeOpacity="0.12" />
-        <path d={D_EDGE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" style={{ opacity: d.highlight }} />
+        <path d={D_EDGE} fill="none" stroke={BRAND.label} strokeWidth="1.5" style={{ opacity: d.highlight }} />
       </g>
 
       {/* T */}
       <g style={{ opacity: t.opacity, transform: `translate(${t.x}px, ${t.y}px)` }}>
-        <path d={T_SHAPE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: t.highlight }} />
+        <path d={T_SHAPE} fill="none" stroke={BRAND.glow} strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: t.highlight }} />
         <path d={T_SHAPE} fill={`url(#${id}-metal)`} stroke="#ffffff" strokeOpacity="0.12" />
-        <path d={T_SHAPE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" style={{ opacity: t.highlight }} />
+        <path d={T_SHAPE} fill="none" stroke={BRAND.label} strokeWidth="1.5" style={{ opacity: t.highlight }} />
       </g>
 
       {/* Red light spilling onto the metal around the seam */}
       <g className={igniteClass}>
         <g style={{ opacity: layout.seamGlow * 0.22, transform: 'translate(30px, 10px)' }}>
-          <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="10" filter={`url(#${id}-glow)`} />
+          <path d={SEAM_LINE} fill="none" stroke={BRAND.glow} strokeWidth="10" filter={`url(#${id}-glow)`} />
         </g>
       </g>
     </svg>
