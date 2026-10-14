@@ -176,7 +176,7 @@ Each card shows its course as a small caption. Every project here was a course's
   `{ rotX, rotY, explode: 0–1, focus: 'none' | 'core' | 'D' | 'T', focusAmount: 0–1, glow: 0–1 }`.
   Poses are keyframes in `src/motion/choreography.ts`, and scroll progress interpolates between them.
 - **Mouse tilt:** on desktop with a mouse, the logo tilts up to about 4° toward the cursor, smoothed. It's off for touch screens and reduced motion.
-- **Performance:** device pixel ratio is capped to [1, 2]. Rendering pauses when the tab is hidden or the canvas is off screen. The 3D code is loaded lazily, in its own chunk after first paint, and the flat SVG logo shows until it's ready.
+- **Performance:** the canvas draws only when something changes (scrolling, the mouse, the startup flicker), so an idle or hidden tab costs nothing. Device pixel ratio is capped to [1, 1.75]. The 3D code is loaded lazily, in its own chunk after first paint, and the flat SVG logo shows until it's ready.
 
 ## 6. Motion
 

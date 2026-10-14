@@ -45,7 +45,7 @@ const browser = await chromium.launch({
   channel: 'msedge',
   args: noWebgl
     ? ['--disable-webgl', '--disable-webgl2', '--disable-3d-apis']
-    : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+    : [], // the machine's real graphics card renders the 3D logo
 })
 
 try {

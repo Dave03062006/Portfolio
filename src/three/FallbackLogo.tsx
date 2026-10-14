@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { D_OUTER, D_WINDOW, SEAM, T_OUTER, toPathData } from '../brand/logoPaths'
 import type { Pose } from '../motion/pose'
+import { CHIP_CELLS } from './chip'
 import { fallbackLayout } from './fallbackLayout'
 import styles from './FallbackLogo.module.css'
 
@@ -10,10 +11,6 @@ const D_HOLE = toPathData(D_WINDOW)
 const T_SHAPE = toPathData(T_OUTER)
 const SEAM_LINE = toPathData(SEAM, false)
 
-// The 3 × 4 grid of glowing squares on the core chip. The middle one burns hottest.
-const CHIP_CELLS = [0, 1, 2, 3].flatMap((row) =>
-  [0, 1, 2].map((col) => ({ x: 20 + col * 9, y: 8 + row * 9, hot: row === 1 && col === 1 })),
-)
 
 type FallbackLogoProps = {
   pose: Pose

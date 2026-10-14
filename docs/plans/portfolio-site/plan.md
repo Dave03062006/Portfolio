@@ -121,7 +121,7 @@ None. The tasks run in order, because each one builds on the last: the static si
 | Risk | Mitigation |
 |---|---|
 | Headless Edge may not render WebGL | Try SwiftShader flags (`--use-angle=swiftshader --enable-unsafe-swiftshader`) early in Task 4. If that fails, Dave checks the 3D visually. |
-| Low-end phones struggle with bloom and metal materials | drei `PerformanceMonitor` lowers DPR and turns bloom off. The SVG fallback is always available. |
+| Low-end phones struggle with bloom and metal materials | Draw on demand only (no frames while idle) and cap DPR at 1.75. The SVG fallback is always available. *(Task 4: drei `PerformanceMonitor` was dropped, because on-demand rendering makes its frame-rate readings unreliable.)* |
 | Mobile address-bar resizes break scroll pinning | Use CSS `position: sticky/fixed` instead of GSAP pinning, and re-measure sections with a ResizeObserver. |
 | Bevels look wrong on the sharp chamfers | Tune `bevelSegments` and size. Fall back to no bevel plus an edge-highlight material. |
 | Library versions are newer than my training data | Check against installed type definitions, docs and real builds rather than memory. |

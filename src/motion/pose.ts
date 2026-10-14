@@ -20,7 +20,8 @@ export type Pose = {
 
 /** The resting pose for each chapter: what the logo settles into while you read that section. */
 export const CHAPTER_POSES: Record<ChapterId, Pose> = {
-  intro: { spread: 0, focus: null, focusAmount: 0, glow: 0.65, rotX: 0, rotY: 0 },
+  // A slight angle at rest, so the 3D logo shows its depth before you scroll.
+  intro: { spread: 0, focus: null, focusAmount: 0, glow: 0.65, rotX: 4, rotY: -10 },
   about: { spread: 1, focus: 'core', focusAmount: 1, glow: 0.7, rotX: 6, rotY: -14 },
   projects: { spread: 1, focus: 'D', focusAmount: 1, glow: 0.7, rotX: 4, rotY: 16 },
   experience: { spread: 1, focus: 'T', focusAmount: 1, glow: 0.7, rotX: 4, rotY: -18 },

@@ -1,18 +1,9 @@
 import type { CSSProperties } from 'react'
-import type { LogoPart, TeardownLabel } from '../content/types'
+import type { TeardownLabel } from '../content/types'
+import { LABEL_LAYOUT, liveAnchors, type DrawingPoint } from './labelLayout'
 import styles from './TeardownLabels.module.css'
 
-type Point = [x: number, y: number]
-
-// Positions in the flat logo's 260 × 220 drawing, matching the pulled-apart pose.
-// Each line runs from a point on its part (anchor) to where its label sits (end).
-const LAYOUT: Record<LogoPart, { anchor: Point; end: Point; placement: 'above' | 'below' }> = {
-  T: { anchor: [214, 50], end: [214, -12], placement: 'above' }, // up from the T's crossbar
-  core: { anchor: [154, 122], end: [154, 236], placement: 'below' }, // down through the gap
-  D: { anchor: [44, 166], end: [44, 236], placement: 'below' }, // down from the D
-}
-
-const toPercent = ([x, y]: Point): CSSProperties => ({
+const toPercent = ([x, y]: DrawingPoint): CSSProperties => ({
   left: `${(x / 260) * 100}%`,
   top: `${(y / 220) * 100}%`,
 })
@@ -35,7 +26,9 @@ export function TeardownLabels({ labels, reveal }: TeardownLabelsProps) {
       <div className={styles.callouts}>
         <svg className={styles.lines} viewBox="0 0 260 220" aria-hidden="true">
           {labels.map(({ part }) => {
-            const { anchor, end } = LAYOUT[part]
+            const { end } = LABEL_LAYOUT[part]
+            // The 3D logo reports where the part really is; otherwise use the flat layout.
+            const anchor = liveAnchors[part] ?? LABEL_LAYOUT[part].anchor
             return (
               <g key={part}>
                 {/* pathLength="1" lets the line "draw in" by sliding a dash along it */}
@@ -53,8 +46,8 @@ export function TeardownLabels({ labels, reveal }: TeardownLabelsProps) {
         {labels.map((label) => (
           <p
             key={label.part}
-            className={`${styles.label} ${styles[LAYOUT[label.part].placement]}`}
-            style={{ ...toPercent(LAYOUT[label.part].end), opacity: reveal.text }}
+            className={`${styles.label} ${styles[LABEL_LAYOUT[label.part].placement]}`}
+            style={{ ...toPercent(LABEL_LAYOUT[label.part].end), opacity: reveal.text }}
           >
             <span className={styles.title}>
               {label.part === 'core' ? 'Core' : label.part} · {label.title}

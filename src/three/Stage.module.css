@@ -26,11 +26,27 @@
   opacity: 0.55;
 }
 
-/* Holds the logo and its labels. The labels are positioned against this box. */
+/* Holds the logo and its labels. The labels are positioned against this box, which has
+   the flat drawing's proportions (260 × 220) whichever logo is showing. */
 .frame {
   position: relative;
   width: min(68vw, 18rem);
+  aspect-ratio: 260 / 220;
   transition: opacity 200ms var(--ease-out); /* the reduced-motion crossfade */
+}
+
+/* The flat logo and the 3D logo sit on top of each other and crossfade. */
+.layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+/* Soft red light behind the 3D logo */
+.haze {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(closest-side, rgb(255 31 53 / 0.2), transparent 75%);
 }
 
 .figure {
