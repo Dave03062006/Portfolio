@@ -3,9 +3,9 @@
 //
 // Usage (build first):
 //   npm run build
-//   npm run shots                          all chapters, laptop + phone
+//   npm run shots                          all chapters, at laptop, tablet and phone sizes
 //   npm run shots -- --at=0,0.12,about     scroll positions: 0–1 fractions of the page, or section ids
-//   npm run shots -- --only=phone          one viewport only (desktop | phone)
+//   npm run shots -- --only=phone          one viewport only (desktop | tablet | phone)
 //   npm run shots -- --reduced-motion      as if "reduce motion" is on in the OS
 //   npm run shots -- --no-webgl            as if the browser has no 3D support
 //   npm run shots -- --full                one tall screenshot of the whole page
@@ -25,6 +25,7 @@ const value = (name, fallback) => {
 
 const VIEWPORTS = {
   desktop: { width: 1440, height: 900, deviceScaleFactor: 1 },
+  tablet: { width: 820, height: 1180, deviceScaleFactor: 1, isMobile: true, hasTouch: true },
   phone: { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
 }
 const only = value('only', '')

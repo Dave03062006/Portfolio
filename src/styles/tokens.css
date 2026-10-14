@@ -24,9 +24,9 @@
   --text-label: 0.75rem;
   --text-small: 0.875rem;
   --text-body: 1rem;
-  --text-lead: clamp(1.0625rem, 0.95rem + 0.45vw, 1.3125rem);
-  --text-h2: clamp(2.5rem, 1.6rem + 3.4vw, 4.25rem);
-  --text-h1: clamp(2.6rem, 1.1rem + 4.9vw, 5.5rem);
+  --text-lead: clamp(1.0625rem, 0.95rem + 0.3vw, 1.1875rem);
+  --text-h2: clamp(2.25rem, 1.1rem + 2.9vw, 3.5rem);
+  --text-h1: clamp(2.5rem, 1rem + 3.4vw, 4.25rem);
 
   /* ---- spacing ---- */
   --space-1: 0.25rem;

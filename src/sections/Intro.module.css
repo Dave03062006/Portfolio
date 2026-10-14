@@ -1,0 +1,101 @@
+.intro {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Phone: the logo shows through this gap at the top */
+.window {
+  flex: none;
+  height: 46svh;
+}
+
+.hero {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--space-5) var(--space-9);
+  background: linear-gradient(transparent, var(--bg) 3rem);
+}
+
+.name {
+  font-size: var(--text-h1);
+  text-transform: uppercase;
+}
+
+.name span {
+  display: block;
+}
+
+.meta {
+  margin-top: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.oneLiner {
+  margin-top: var(--space-5);
+  max-width: 34ch;
+  font-size: clamp(1.125rem, 1rem + 0.55vw, 1.4rem);
+  line-height: 1.45;
+  color: #c9c9cf;
+}
+
+/* Phone: the pill lives here, because the top bar has no room for it */
+.pill {
+  align-self: flex-start;
+  margin-top: var(--space-5);
+}
+
+.scroll {
+  position: absolute;
+  bottom: var(--space-5);
+  left: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+@media (min-width: 768px) {
+  .window {
+    display: none;
+  }
+
+  .hero {
+    margin-left: 6vw;
+    padding: 0 0 15svh;
+    background: none;
+  }
+
+  .pill {
+    display: none;
+  }
+
+  .scroll {
+    left: 6vw;
+    bottom: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    margin-left: 16vw;
+  }
+
+  .scroll {
+    left: 16vw;
+  }
+
+  .meta {
+    font-size: 0.8125rem;
+  }
+}

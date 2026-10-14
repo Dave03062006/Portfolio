@@ -1,0 +1,16 @@
+.list {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Wide screens: small cards sit side by side; large and medium cards take the full row. */
+@media (min-width: 1200px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .large,
+  .medium {
+    grid-column: 1 / -1;
+  }
+}

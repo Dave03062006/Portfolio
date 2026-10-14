@@ -1,0 +1,78 @@
+.section {
+  position: relative;
+}
+
+/* Phone: a see-through gap where the logo (fixed behind the page) shows */
+.window {
+  height: 46svh;
+}
+
+/* Phone: the content has a solid background, so it covers the logo as it scrolls up */
+.content {
+  position: relative;
+  padding: var(--space-6) var(--space-5) var(--space-9);
+  background: var(--bg);
+}
+
+.content::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 4rem;
+  background: linear-gradient(transparent, var(--bg));
+  pointer-events: none;
+}
+
+.title {
+  margin-top: var(--space-3);
+  font-size: var(--text-h2);
+}
+
+.lead {
+  margin-top: var(--space-4);
+  max-width: 40ch;
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.body {
+  margin-top: var(--space-6);
+}
+
+/* Tablet and up: no gap, no background. The logo sits beside the text instead of behind it. */
+@media (min-width: 768px) {
+  /* Each chapter is at least one screen tall, so the logo has time to show its pose.
+     Content starts at the top (not centred), so filtering the timeline never makes it jump. */
+  .section {
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-start;
+    padding: var(--space-9) 0 var(--space-10);
+  }
+
+  .window {
+    display: none;
+  }
+
+  .content {
+    margin-left: 6vw;
+    width: 50vw;
+    max-width: 42rem;
+    padding: 0;
+    background: none;
+  }
+
+  .content::before {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    margin-left: 16vw;
+    width: 42vw;
+  }
+}

@@ -1,0 +1,73 @@
+/* Phone first: the logo sits in the top part of the screen and content scrolls over it. */
+.stage {
+  position: fixed;
+  z-index: 1;
+  top: var(--topbar-h);
+  left: 0;
+  right: 0;
+  height: 40svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  pointer-events: none;
+}
+
+/* Faint technical-drawing grid that fades out toward the edges */
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  background-position: center;
+  mask-image: radial-gradient(closest-side, #000 25%, transparent);
+  opacity: 0.55;
+}
+
+.frame {
+  position: relative;
+  width: min(74vw, 20rem);
+}
+
+.figure {
+  display: none;
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* Tablet and up: the logo moves to the right side and fills the height. */
+@media (min-width: 768px) {
+  .stage {
+    left: auto;
+    right: 2vw;
+    bottom: 0;
+    width: 40vw;
+    height: auto;
+  }
+
+  .frame {
+    width: min(38vw, 34rem);
+  }
+
+  .figure {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stage {
+    right: 3vw;
+    width: 36vw;
+  }
+
+  .frame {
+    width: min(34vw, 34rem);
+  }
+}

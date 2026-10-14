@@ -1,0 +1,38 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  /* undo the browser's default fieldset box */
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filter {
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.filter:hover {
+  color: var(--text);
+  border-color: #3a3a40;
+}
+
+.filter[aria-pressed='true'] {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--bg);
+  font-weight: 600;
+}

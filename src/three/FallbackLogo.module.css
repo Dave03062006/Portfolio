@@ -1,0 +1,24 @@
+.logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Pieces glide between poses; glows fade. */
+.piece {
+  transition:
+    transform 700ms var(--ease-out),
+    opacity 500ms var(--ease-out);
+}
+
+.fade {
+  transition: opacity 500ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece,
+  .fade {
+    transition: none;
+  }
+}

@@ -1,0 +1,145 @@
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #1f1f23;
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color var(--dur) var(--ease-out);
+}
+
+/* Hover, or keyboard focus on one of its links: the border lights up and the screenshot brightens. */
+.card:hover,
+.card:focus-within {
+  border-color: rgb(255 45 61 / 0.55);
+}
+
+.media {
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid #1f1f23;
+}
+
+.media img {
+  transition:
+    opacity 400ms var(--ease-out),
+    filter var(--dur) var(--ease-out);
+}
+
+.card:hover .media img {
+  filter: brightness(1.12);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem 1.35rem 1.35rem;
+}
+
+.name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-stretch: 112%;
+  line-height: 1.2;
+}
+
+.tagline {
+  margin-left: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  font-stretch: 100%;
+  color: var(--text-2);
+}
+
+.course {
+  margin-top: -0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tags li {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c9c9cf;
+}
+
+.description {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.part {
+  padding-top: 0.8rem;
+  border-top: 1px dashed #26262b;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #e4e4e8;
+}
+
+.partLabel {
+  margin-bottom: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red-label);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin-top: 0.2rem;
+}
+
+.link {
+  display: inline-block;
+  padding: 0.35rem 0 0.15rem;
+  border-bottom: 1px solid var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.link:hover {
+  color: var(--red);
+}
+
+/* Wide screens: medium cards put the screenshot beside the text. */
+@media (min-width: 1200px) {
+  .medium {
+    flex-direction: row;
+  }
+
+  .medium .media {
+    flex: 0 0 13rem;
+    aspect-ratio: auto;
+    border-bottom: 0;
+    border-right: 1px solid #1f1f23;
+  }
+
+  .small .name {
+    font-size: 1.1875rem;
+  }
+}

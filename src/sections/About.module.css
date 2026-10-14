@@ -1,0 +1,29 @@
+.intro {
+  display: grid;
+  grid-template-columns: 1fr 6.5rem;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.bio {
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.photo {
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.6rem;
+}
+
+.spec {
+  margin-top: var(--space-7);
+}
+
+@media (min-width: 1024px) {
+  .intro {
+    grid-template-columns: 1fr 9.5rem;
+    gap: var(--space-6);
+  }
+}

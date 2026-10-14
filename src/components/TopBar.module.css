@@ -1,0 +1,94 @@
+.bar {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--space-5);
+  /* Solid at the top, fading out, so text scrolling underneath never collides with the bar */
+  background: linear-gradient(var(--bg) 60%, transparent);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.logo {
+  color: var(--red);
+}
+
+.brandText {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.pill {
+  display: none;
+}
+
+/* Phone: the chapter button fills the rest of the bar */
+.menuButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 2.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.current b {
+  color: var(--red);
+  font-weight: 600;
+  margin-right: 0.35em;
+}
+
+.burger {
+  width: 1.25rem;
+  height: 2px;
+  background: currentColor;
+  box-shadow: 0 6px 0 currentColor;
+  transform: translateY(-3px);
+}
+
+@media (min-width: 768px) {
+  .bar {
+    padding: 0 3vw;
+  }
+
+  .brandText {
+    display: inline;
+  }
+
+  .pill {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .menuButton {
+    flex: none;
+    padding: 0 var(--space-2);
+  }
+}
+
+/* Laptop: the chapter list on the left takes over, so the menu button goes away */
+@media (min-width: 1024px) {
+  .menuButton {
+    display: none;
+  }
+}

@@ -1,0 +1,68 @@
+.rail {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .rail {
+    display: block;
+    position: fixed;
+    z-index: 10;
+    left: 3vw;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.list {
+  border-left: 1px solid var(--line-strong);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  height: 2.75rem;
+  padding-left: 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--text-3);
+  transition: color var(--dur) var(--ease-out);
+}
+
+.link:hover {
+  color: var(--text-2);
+}
+
+.link[aria-current] {
+  color: var(--text);
+}
+
+.number {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #45454c;
+  transition: color var(--dur) var(--ease-out);
+}
+
+.link[aria-current] .number {
+  color: var(--red);
+}
+
+/* Each step down the list is one link's height (2.75rem). */
+.marker {
+  position: absolute;
+  left: -2px;
+  top: 0.5rem;
+  width: 3px;
+  height: 1.75rem;
+  background: var(--red);
+  box-shadow: 0 0 0.75rem var(--red);
+  transform: translateY(calc(var(--index) * 2.75rem));
+  transition: transform 350ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    transition: none;
+  }
+}

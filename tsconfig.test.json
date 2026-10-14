@@ -1,0 +1,11 @@
+{
+  // Type-checks the test files. They may use Node's built-ins (like reading files),
+  // which the website code itself must not, so they get their own settings.
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src/**/*.test.ts", "src/**/*.test.tsx"],
+  "exclude": []
+}

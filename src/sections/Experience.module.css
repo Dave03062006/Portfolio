@@ -1,0 +1,16 @@
+.timeline {
+  position: relative;
+  margin-top: var(--space-6);
+  padding-left: 2rem;
+}
+
+/* The line of the climb: grey at the start, turning red as it reaches "now". */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.45rem;
+  top: 0.5rem;
+  bottom: 2.5rem;
+  width: 1px;
+  background: linear-gradient(var(--line-strong), var(--red));
+}

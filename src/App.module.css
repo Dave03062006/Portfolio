@@ -1,0 +1,9 @@
+/* The chapters scroll above the fixed logo stage. */
+.main {
+  position: relative;
+  z-index: 2;
+}
+
+.main:focus {
+  outline: none;
+}
