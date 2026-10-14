@@ -1,0 +1,52 @@
+/*
+ * Design tokens: every color, font, size and timing the site uses, in one place.
+ * Change a value here and it changes everywhere it's used.
+ */
+:root {
+  /* ---- colors ---- */
+  --bg: #050505; /* page background */
+  --surface: #0a0a0c; /* cards */
+  --line: #1c1c20; /* dividers, grid lines */
+  --line-strong: #2a2a2f; /* borders on pills and chips */
+  --text: #f4f4f5; /* headings, important text */
+  --text-2: #a6a6ae; /* body text */
+  --text-3: #5d5d65; /* inactive labels, captions */
+  --red: #ff2d3d; /* the brand red */
+  --red-label: #ff4d5b; /* small monospace labels */
+  --red-hot: #ffb1b8; /* the hottest part of a glow */
+  --red-glow: rgb(255 45 61 / 0.35);
+
+  /* ---- fonts ---- */
+  --font-sans: 'Archivo Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  /* ---- type sizes (clamp = grows with the screen, between a minimum and a maximum) ---- */
+  --text-label: 0.75rem;
+  --text-small: 0.875rem;
+  --text-body: 1rem;
+  --text-lead: clamp(1.0625rem, 0.95rem + 0.45vw, 1.3125rem);
+  --text-h2: clamp(2.5rem, 1.6rem + 3.4vw, 4.25rem);
+  --text-h1: clamp(2.6rem, 1.1rem + 4.9vw, 5.5rem);
+
+  /* ---- spacing ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 9rem;
+
+  /* ---- layout ---- */
+  --topbar-h: 4rem;
+  --radius: 0.75rem;
+  --radius-pill: 999px;
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1); /* same curve as GSAP's "power3.out" */
+  --dur-fast: 200ms;
+  --dur: 300ms;
+}

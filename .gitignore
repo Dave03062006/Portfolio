@@ -3,12 +3,21 @@ node_modules/
 
 # build output
 dist/
+dist-ssr/
+
+# screenshots from `npm run shots`
+shots/
 
 # brainstorming companion files
 .superpowers/
 
 # local environment files
 .env*
+*.local
+
+# logs
+*.log
+npm-debug.log*
 
 # editor and OS files
 .vscode/*
@@ -16,6 +25,3 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
-
-# logs
-*.log
