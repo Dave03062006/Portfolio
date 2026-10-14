@@ -218,7 +218,7 @@ Every scroll animation uses GSAP ScrollTrigger with `scrub` and light smoothing 
 
 ## 8. Code architecture
 
-**Tools:** Vite, React, TypeScript, React Three Fiber with drei and postprocessing, GSAP with ScrollTrigger and `@gsap/react`, CSS Modules with global CSS variables, Vitest, and ESLint.
+**Tools:** Vite, React, TypeScript, React Three Fiber with drei and postprocessing, GSAP with ScrollTrigger and `@gsap/react`, CSS Modules with global CSS variables, Vitest, and Oxlint (the Vite template's default linter).
 
 ```
 src/
@@ -246,7 +246,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
 
 ## 9. Testing and verification
 
-- `npm run check`: TypeScript (`tsc --noEmit`) and ESLint
+- `npm run check`: TypeScript (`tsc -b`) and Oxlint
 - **Vitest unit tests:**
   - choreography: the pose at each keyframe, interpolation, clamping outside 0–1
   - experience filter rule, including the Student Union entry showing under KEPANITIAAN
