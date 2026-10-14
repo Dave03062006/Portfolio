@@ -1,27 +1,36 @@
-import { Environment, Lightformer } from '@react-three/drei'
+type Lamp = {
+  color: string
+  intensity: number
+  position: [number, number, number]
+}
+
+// Lamps placed where a product photographer would put soft boxes. Point lights are the
+// cheapest kind for the graphics card to draw, which keeps the page from stuttering while
+// the 3D logo starts up (fancier "environment" and "area" lights made phones freeze).
+const LAMPS: Lamp[] = [
+  // behind the camera: lights the faces that look at you, and puts a soft sheen on them
+  { color: '#ffffff', intensity: 2.4, position: [0, 2.2, 5] },
+  // left and right: crisp highlights along the bevelled edges
+  { color: '#ffffff', intensity: 1.8, position: [-4, 0.8, 2] },
+  { color: '#ffffff', intensity: 1.8, position: [4, 0.8, 2] },
+  // red from below and behind: the neon bounce and rim on every edge
+  { color: '#ff2d3d', intensity: 7, position: [0, -3.2, 1.5] },
+  { color: '#ff2d3d', intensity: 9, position: [0, 0.6, -3] },
+]
 
 /**
- * Lighting, set up like a product photo studio. Metal looks like metal because of what it
- * reflects, so the logo sits inside an invisible "environment" of glowing panels: white
- * strips for crisp highlights, and red panels below and behind for neon reflections.
- * It's rendered once at startup (frames={1}) and costs nothing after that.
+ * Lighting, set up like a product photo studio: white lamps for shape and shine, red lamps
+ * for the neon glow on the edges. `decay={0}` means a lamp is equally bright at any distance,
+ * which makes the brightness numbers above easy to tune by eye.
  */
 export function Studio() {
   return (
     <>
-      <ambientLight intensity={0.12} />
-      <directionalLight position={[2, 3, 4]} intensity={0.5} />
-      <Environment resolution={256} frames={1}>
-        {/* big soft box behind the camera: the faces that look at you reflect this one */}
-        <Lightformer form="rect" intensity={1.4} position={[0, 2.5, 5]} scale={[10, 5, 1]} target={[0, 0, 0]} />
-        {/* soft box above, two thin strip lights left and right */}
-        <Lightformer form="rect" intensity={3} position={[0, 4, 3]} scale={[8, 2, 1]} target={[0, 0, 0]} />
-        <Lightformer form="rect" intensity={1.6} position={[-4, 0.5, 2]} scale={[0.6, 6, 1]} target={[0, 0, 0]} />
-        <Lightformer form="rect" intensity={1.6} position={[4, 0.5, 2]} scale={[0.6, 6, 1]} target={[0, 0, 0]} />
-        {/* red glow bouncing up from below, and a red ring behind for rim light */}
-        <Lightformer form="rect" color="#ff2d3d" intensity={4} position={[0, -3.5, 1.5]} scale={[7, 3, 1]} target={[0, 0, 0]} />
-        <Lightformer form="ring" color="#ff2d3d" intensity={3} position={[0, 0.5, -4]} scale={3} target={[0, 0, 0]} />
-      </Environment>
+      <ambientLight intensity={0.22} />
+      <directionalLight position={[1, 3, 4]} intensity={0.6} />
+      {LAMPS.map((lamp, i) => (
+        <pointLight key={i} color={lamp.color} intensity={lamp.intensity} position={lamp.position} decay={0} />
+      ))}
     </>
   )
 }

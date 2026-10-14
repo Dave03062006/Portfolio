@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Share preview</title>
+    <link rel="stylesheet" href="/node_modules/@fontsource-variable/archivo/wdth.css" />
+    <link rel="stylesheet" href="/node_modules/@fontsource-variable/jetbrains-mono/index.css" />
+    <style>
+      html, body { margin: 0; background: #050505; }
+      .card { position: relative; width: 1200px; height: 630px; overflow: hidden; color: #f4f4f5;
+        font-family: 'Archivo Variable', sans-serif; background:
+          radial-gradient(38% 60% at 78% 50%, rgb(255 31 53 / 0.18), transparent 70%), #050505; }
+      .grid { position: absolute; inset: 0; background-image: linear-gradient(#141418 1.5px, transparent 1.5px),
+          linear-gradient(90deg, #141418 1.5px, transparent 1.5px); background-size: 50px 50px;
+        mask-image: radial-gradient(45% 75% at 78% 50%, #000 30%, transparent 85%); }
+      .mono { font-family: 'JetBrains Mono Variable', monospace; text-transform: uppercase; }
+      .top { position: absolute; left: 80px; top: 72px; font-size: 18px; letter-spacing: 0.16em; color: #a6a6ae; }
+      .name { position: absolute; left: 80px; top: 238px; margin: 0; font-size: 70px; font-weight: 800;
+        font-stretch: 125%; line-height: 1; letter-spacing: -0.005em; }
+      .meta { position: absolute; left: 80px; top: 432px; font-size: 18px; letter-spacing: 0.12em; color: #a6a6ae; }
+      .pill { position: absolute; left: 80px; top: 500px; display: flex; align-items: center; gap: 12px;
+        padding: 10px 20px; border: 1.5px solid #2a2a2f; border-radius: 99px; font-size: 16px;
+        font-weight: 600; letter-spacing: 0.14em; color: #d0d0d5; }
+      .pill i { width: 10px; height: 10px; border-radius: 50%; background: #ff2d3d; box-shadow: 0 0 12px #ff2d3d; }
+      svg { position: absolute; left: 790px; top: 135px; width: 340px; height: 340px; overflow: visible; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="grid"></div>
+      <p class="top mono">DT / Portfolio</p>
+      <h1 class="name">DAVE TRISTIAN<br />NURCAHYO</h1>
+      <p class="meta mono">IMT · Full Stack Development · Universitas Ciputra</p>
+      <p class="pill mono"><i></i>Open to internships</p>
+      <!-- The metal logo, drawn the same way as the site's flat logo -->
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#55555e" /><stop offset="0.18" stop-color="#34343b" />
+            <stop offset="0.7" stop-color="#1d1d22" /><stop offset="1" stop-color="#141418" />
+          </linearGradient>
+          <radialGradient id="window" cx="0.42" cy="0.5" r="0.75">
+            <stop offset="0" stop-color="#ff3a4a" /><stop offset="0.55" stop-color="#b8001b" /><stop offset="1" stop-color="#3d0008" />
+          </radialGradient>
+          <filter id="glow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="near" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="far" />
+            <feMerge><feMergeNode in="far" /><feMergeNode in="near" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <path d="M94.83 42L122 71.17L122 134" fill="none" stroke="#ff1f35" stroke-width="6" filter="url(#glow)" />
+        <path d="M94.83 44L122 71.17L122 130" fill="none" stroke="#ff8a95" stroke-width="3" />
+        <path d="M48 68L48 132L84 132L96 120L96 80L84 68Z" fill="url(#window)" />
+        <path d="M24 44L92 44L120 72L120 128L92 156L24 156ZM48 68L48 132L84 132L96 120L96 80L84 68Z" fill="url(#metal)" fill-rule="evenodd" stroke="#fff" stroke-opacity="0.12" />
+        <path d="M97.66 44L174.34 44L174.34 68L148 68L148 156L124 156L124 68L121.66 68Z" fill="url(#metal)" stroke="#fff" stroke-opacity="0.12" />
+        <path d="M94.83 44L122 71.17L122 128" fill="none" stroke="#ff1f35" stroke-width="10" opacity="0.22" filter="url(#glow)" />
+      </svg>
+    </div>
+  </body>
+</html>

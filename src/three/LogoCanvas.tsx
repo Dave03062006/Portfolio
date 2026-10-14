@@ -1,6 +1,6 @@
-import { Canvas } from '@react-three/fiber'
-import { Bloom, EffectComposer } from '@react-three/postprocessing'
-import type { RefObject } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
+import { useEffect, useState, type RefObject } from 'react'
+import { Glow } from './Glow'
 import { LogoModel, type StageState } from './LogoModel'
 import { CAMERA_DISTANCE, CAMERA_FOV, CANVAS_MARGIN } from './projection'
 import { Studio } from './Studio'
@@ -18,23 +18,60 @@ type LogoCanvasProps = {
  * the 3D library is large. Stage.tsx imports it with React.lazy.
  */
 export default function LogoCanvas({ stateRef, frameRequestRef, onReady }: LogoCanvasProps) {
+  // Draw nothing until the graphics programs are ready (see CompileThenDraw below), then
+  // draw only when something changed: scrolling, the mouse, the startup flicker.
+  const [frameloop, setFrameloop] = useState<'never' | 'demand'>('never')
+
   return (
     <Canvas
       // 25% bigger than the logo frame on every side (CANVAS_MARGIN), so glows never get cut off
       style={{ position: 'absolute', inset: `${-CANVAS_MARGIN * 100}%`, width: 'auto', height: 'auto' }}
-      // Only draw when something changed (scrolling, the mouse, the startup flicker), instead of
-      // 60 times a second forever. An idle tab costs the graphics card nothing.
-      frameloop="demand"
+      frameloop={frameloop}
       // Sharp on high-resolution screens, but capped so phones don't overwork.
       dpr={[1, 1.75]}
       camera={{ fov: CAMERA_FOV, position: [0, 0, CAMERA_DISTANCE], near: 0.1, far: 50 }}
       gl={{ antialias: true, alpha: true }}
+      // Checking shaders for mistakes makes the browser wait on the graphics card; only do it while developing.
+      onCreated={({ gl }) => {
+        gl.debug.checkShaderErrors = import.meta.env.DEV
+      }}
     >
       <Studio />
       <LogoModel stateRef={stateRef} frameRequestRef={frameRequestRef} onReady={onReady} />
-      <EffectComposer>
-        <Bloom mipmapBlur luminanceThreshold={1} intensity={1.1} radius={0.72} />
-      </EffectComposer>
+      <Glow />
+      <CompileThenDraw onCompiled={() => setFrameloop('demand')} />
     </Canvas>
   )
+}
+
+/**
+ * Prepares the logo's graphics programs ("shaders") in the background before the first frame.
+ * Compiling them the usual way freezes the page for a moment, very noticeably on phones.
+ * Meanwhile the flat logo stays on screen, so nobody sees the wait.
+ */
+function CompileThenDraw({ onCompiled }: { onCompiled: () => void }) {
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+  const camera = useThree((state) => state.camera)
+  const frameloop = useThree((state) => state.frameloop)
+  const invalidate = useThree((state) => state.invalidate)
+
+  useEffect(() => {
+    let cancelled = false
+    gl.compileAsync(scene, camera).then(() => {
+      if (!cancelled) onCompiled()
+    })
+    return () => {
+      cancelled = true
+    }
+    // Compile once, when the scene first exists.
+    // eslint-disable-next-line react/exhaustive-deps
+  }, [gl, scene, camera])
+
+  // As soon as drawing is switched on, draw the first frame.
+  useEffect(() => {
+    if (frameloop === 'demand') invalidate()
+  }, [frameloop, invalidate])
+
+  return null
 }

@@ -49,7 +49,21 @@ export function Stage() {
   })
 
   const [supports3D] = useState(canUseWebGL)
+  const [load3D, setLoad3D] = useState(false)
   const [show3D, setShow3D] = useState(false)
+
+  // Start loading the 3D logo only once the browser is idle, after the page's text is up,
+  // so phones show the content as fast as possible. The flat logo covers the wait.
+  useEffect(() => {
+    if (!supports3D) return
+    const start = () => setLoad3D(true)
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(start, { timeout: 2500 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const timer = window.setTimeout(start, 1200) // Safari has no requestIdleCallback
+    return () => window.clearTimeout(timer)
+  }, [supports3D])
   const [flatRetired, setFlatRetired] = useState(false)
   const onReady = useCallback(() => setShow3D(true), [])
   const on3DError = useCallback(() => {
@@ -76,7 +90,7 @@ export function Stage() {
             <FallbackLogo pose={pose} ignite={!reduced} />
           </div>
         )}
-        {supports3D && (
+        {load3D && (
           <ErrorBoundary fallback={null} onError={on3DError}>
             <Suspense fallback={null}>
               <div className={styles.layer} style={{ opacity: show3D ? 1 : 0 }}>

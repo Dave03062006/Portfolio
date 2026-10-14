@@ -2,16 +2,16 @@
    In React Three Fiber, 3D objects are changed in place on every frame (inside useFrame).
    That is the intended way to animate at 60 fps without re-rendering, so this rule,
    which is right for ordinary React data, does not apply to this file. */
-import { Edges, RoundedBox, type EdgesRef } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import {
   CanvasTexture,
   Color,
+  EdgesGeometry,
   ExtrudeGeometry,
+  LineBasicMaterial,
   MathUtils,
   MeshBasicMaterial,
-  MeshPhysicalMaterial,
   MeshStandardMaterial,
   ShapeGeometry,
   SRGBColorSpace,
@@ -129,21 +129,22 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
 
   // Build geometry and materials once. useMemo keeps them between renders.
   const parts = useMemo(() => {
-    const metal = () =>
-      new MeshPhysicalMaterial({
-        color: '#2c2c33',
-        metalness: 0.92,
-        roughness: 0.32,
-        clearcoat: 0.25,
-        clearcoatRoughness: 0.4,
-      })
+    // Dark machined metal. Not fully metallic: with simple lamps (no reflected environment),
+    // fully metallic surfaces would look black wherever no lamp is mirrored in them.
+    const metal = () => new MeshStandardMaterial({ color: '#2a2a31', metalness: 0.65, roughness: 0.3 })
+    // The red outline that marks the focused piece: its hard edges, drawn as glowing lines.
+    const outline = (shape: Shape) => new EdgesGeometry(extrude(shape, false), 20)
+    const outlineGlow = () =>
+      new LineBasicMaterial({ color: RED.clone().multiplyScalar(3), toneMapped: false, transparent: true, opacity: 0 })
     const glow = (color: Color, map?: CanvasTexture) =>
       new MeshBasicMaterial({ color: color.clone(), map, toneMapped: false, transparent: true })
     return {
       dGeometry: extrude(createDShape(), true),
       tGeometry: extrude(createTShape(), true),
-      dOutline: extrude(createDShape(), false),
-      tOutline: extrude(createTShape(), false),
+      dOutline: outline(createDShape()),
+      tOutline: outline(createTShape()),
+      dOutlineGlow: outlineGlow(),
+      tOutlineGlow: outlineGlow(),
       windowGeometry: fitUVs(new ShapeGeometry(createWindowShape())),
       seamGeometry: new ShapeGeometry(createSeamGlowShape()),
       dMetal: metal(),
@@ -161,8 +162,6 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
   const d = useRef<Group>(null)
   const t = useRef<Group>(null)
   const chip = useRef<Group>(null)
-  const dEdges = useRef<EdgesRef>(null)
-  const tEdges = useRef<EdgesRef>(null)
   const spill = useRef<PointLight>(null)
   const tilt = useRef({ x: 0, y: 0 })
   const pointer = useRef({ x: 0, y: 0 })
@@ -218,8 +217,8 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
     )
     parts.dMetal.envMapIntensity = 0.2 + 0.8 * layout.d.opacity
     parts.tMetal.envMapIntensity = 0.2 + 0.8 * layout.t.opacity
-    if (dEdges.current) dEdges.current.material.opacity = layout.d.highlight
-    if (tEdges.current) tEdges.current.material.opacity = layout.t.highlight
+    parts.dOutlineGlow.opacity = layout.d.highlight
+    parts.tOutlineGlow.opacity = layout.t.highlight
 
     // The core: hidden inside while assembled, grows as the pieces part, comes forward in About.
     const coreFocus = pose.focus === 'core' ? pose.focusAmount : 0
@@ -278,13 +277,13 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
       <group ref={d}>
         <mesh geometry={parts.dGeometry} material={parts.dMetal} />
         <mesh geometry={parts.windowGeometry} material={parts.windowGlow} position-z={-DEPTH / 2 + 0.006} />
-        <Edges ref={dEdges} geometry={parts.dOutline} threshold={20} lineWidth={1.6} color={RED.clone().multiplyScalar(3)} toneMapped={false} transparent opacity={0} />
+        <lineSegments geometry={parts.dOutline} material={parts.dOutlineGlow} />
       </group>
 
       {/* The T */}
       <group ref={t}>
         <mesh geometry={parts.tGeometry} material={parts.tMetal} />
-        <Edges ref={tEdges} geometry={parts.tOutline} threshold={20} lineWidth={1.6} color={RED.clone().multiplyScalar(3)} toneMapped={false} transparent opacity={0} />
+        <lineSegments geometry={parts.tOutline} material={parts.tOutlineGlow} />
       </group>
 
       {/* Light in the seam: it sits between the pieces, so it only shows through the gap */}
@@ -292,7 +291,9 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
 
       {/* The core chip */}
       <group ref={chip}>
-        <RoundedBox args={[CHIP_SIZE.width / 100, CHIP_SIZE.height / 100, 0.1]} radius={0.03} smoothness={3} material={parts.chipBody} />
+        <mesh material={parts.chipBody}>
+          <boxGeometry args={[CHIP_SIZE.width / 100, CHIP_SIZE.height / 100, 0.1]} />
+        </mesh>
         {CHIP_CELLS.map((cell) => (
           <mesh
             key={`${cell.x}-${cell.y}`}

@@ -10,7 +10,7 @@
   --line-strong: #2a2a2f; /* borders on pills and chips */
   --text: #f4f4f5; /* headings, important text */
   --text-2: #a6a6ae; /* body text */
-  --text-3: #5d5d65; /* inactive labels, captions */
+  --text-3: #80808a; /* inactive labels, captions (5:1 on the background, enough to read small text) */
   --red: #ff2d3d; /* the brand red */
   --red-label: #ff4d5b; /* small monospace labels */
   --red-hot: #ffb1b8; /* the hottest part of a glow */

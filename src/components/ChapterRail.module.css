@@ -40,7 +40,7 @@
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #45454c;
+  color: var(--text-3);
   transition: color var(--dur) var(--ease-out);
 }
 

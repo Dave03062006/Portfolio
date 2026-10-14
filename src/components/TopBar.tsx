@@ -17,11 +17,11 @@ export function TopBar() {
 
   return (
     <header className={styles.bar}>
-      <a href="#intro" className={styles.brand} aria-label="Dave Tristian, back to the top">
+      {/* Screen readers hear the visible words plus where the link goes: "DT / Portfolio, back to the top" */}
+      <a href="#intro" className={styles.brand}>
         <FlatLogo size={22} label="" className={styles.logo} />
-        <span className={styles.brandText} aria-hidden="true">
-          DT / Portfolio
-        </span>
+        <span className={styles.brandText}>DT / Portfolio</span>
+        <span className="visually-hidden">, back to the top</span>
       </a>
 
       <AvailabilityPill className={styles.pill} />
@@ -32,7 +32,8 @@ export function TopBar() {
         onClick={() => setMenuOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={menuOpen}
-        aria-label={`Chapters menu. Now reading ${chapter.number}, ${chapter.label}`}
+        // Starts with the visible words ("03 Projects"), as screen-reader users would expect
+        aria-label={`${chapter.number} ${chapter.label}, open the chapters menu`}
       >
         <span className={styles.current}>
           <b>{chapter.number}</b> {chapter.label}

@@ -7,7 +7,7 @@ export const projectsCopy: SectionCopy = {
 }
 
 // The cards appear in this order. Card images live in public/images/projects/ (16:10).
-// They're illustrations drawn in design/project-art/. Edit those, then run `node scripts/render-art.mjs`.
+// They're illustrations drawn in design/project-art/. Edit those, then run `node scripts/render-images.mjs`.
 export const projects: Project[] = [
   {
     slug: 'alp-vp',
@@ -24,7 +24,7 @@ export const projects: Project[] = [
       { label: 'API code', href: 'https://github.com/Dave03062006/ALP_Backend' },
     ],
     image: {
-      src: '/images/projects/alp-vp.jpg',
+      src: '/images/projects/alp-vp.webp',
       alt: 'Illustration: the ALP_VP Android app charting spending per game, its points turning into gacha rewards and vouchers, and the TypeScript API and database behind it',
     },
   },
@@ -41,7 +41,7 @@ export const projects: Project[] = [
       'All front-end design, the leaderboard and shop screens, and the logic that applies unlocked customizations.',
     links: [{ label: 'Code', href: 'https://github.com/E-Fredrik/Larva' }],
     image: {
-      src: '/images/projects/larva.jpg',
+      src: '/images/projects/larva.webp',
       alt: 'Illustration: Larva on an Apple Watch and an iPhone, showing activity rings, a workout route, the friends leaderboard and the cosmetics shop',
     },
   },
@@ -59,7 +59,7 @@ export const projects: Project[] = [
       { label: 'Code', href: 'https://github.com/E-Fredrik/imperialStatic' },
     ],
     image: {
-      src: '/images/projects/imperial-kost.jpg',
+      src: '/images/projects/imperial-kost.webp',
       alt: 'Illustration: the Imperial Kost website, with a floor plan of nine rooms, a 360° room view and the interactive map with distances to nearby landmarks',
       focalPoint: '66% 50%', // keep the map (Dave's part) in view when the card crops the image
     },
