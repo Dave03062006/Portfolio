@@ -2,7 +2,7 @@
 
 **Owner:** Dave Tristian Nurcahyo
 **Date:** 2026-10-14
-**Status:** Design approved in brainstorming. This document is waiting for Dave's review.
+**Status:** Approved by Dave on 2026-10-14. He may adjust section wording after seeing the built site.
 
 ## In plain words
 
@@ -124,7 +124,7 @@ The site is one page with five chapters. The chapter list reads **01 Intro, 02 A
 | Small | **ShutterSpace** | Fiverr for photographers | iOS, UIKit, Firebase, Midtrans | A marketplace for booking photographers. | Front-end design support. | [Code](https://github.com/E-Fredrik/ShutterSpace) |
 | Small | **ALP-OOP** | Java clinic system | Java | Booking, prescriptions and medical history. A binary search tree finds free appointment slots. | Booking, appointment and stock functions. | [Code](https://github.com/Dave03062006/ALP-OOP) |
 
-Three cards show their course as a small caption: Larva was the final project for Mobile Application Development, ShutterSpace for Software Engineering, and Imperial Kost for Website Development (built with a partner). ALP_VP and ALP-OOP have no caption unless Dave adds one in `projects.ts`.
+Each card shows its course as a small caption. Every project here was a course's final project: ALP_VP for Visual Programming, Larva for Mobile Application Development, Imperial Kost for Website Development (built with a partner), ShutterSpace for Software Engineering, and ALP-OOP for Object Oriented Programming.
 
 ### 3.4 Experience (the T)
 
