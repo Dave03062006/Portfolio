@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build the one-page portfolio described in [the design spec](../../superpowers/specs/2026-10-14-portfolio-design.md). It's a Vite + React + TypeScript site with five sections, content in data files, and Dave's DT logo as a live 3D object (React Three Fiber) that GSAP ScrollTrigger drives as the visitor scrolls. It includes fallbacks for reduced motion and missing WebGL, tests, and a beginner code tour at the end.
+Build the one-page portfolio described in [the design spec](../../superpowers/specs/2026-10-14-portfolio-design.md). It's a Vite + React + TypeScript site with five sections, content in data files, and Dave's DT logo as a live 3D object (React Three Fiber) that follows the visitor's scroll. It includes fallbacks for reduced motion and missing WebGL, tests, and a beginner code tour at the end.
 
 ## Requirements summary
 
@@ -25,7 +25,7 @@ Current npm versions, all compatible with each other:
 | @react-three/fiber | 9.8.1 | |
 | @react-three/drei | 10.7.9 | needs fiber ^9 |
 | @react-three/postprocessing | 3.2.0 | needs fiber >= 9.7, postprocessing ^6.36 |
-| gsap / @gsap/react | 3.15.0 / 2.1.2 | free, including ScrollTrigger |
+| gsap / @gsap/react | 3.15.0 / 2.1.2 | installed at first, then removed in Task 3 (see Key decisions) |
 | @fontsource-variable/archivo | 5.3.0 | ships `wdth.css`, so the width axis for expanded headings is available |
 | @fontsource-variable/jetbrains-mono | 5.3.0 | |
 | vitest | 5.0.4 | needs vite ^8 |
@@ -66,7 +66,7 @@ Current npm versions, all compatible with each other:
 ### Task 3: Scroll story and motion
 **What:**
 - `choreography.ts` defines the `Pose` type, keyframes for each scroll moment, and `poseAt(progress)` with interpolation. It's pure and unit-tested.
-- `useScrollStory` uses one ScrollTrigger system for both page progress and the active chapter. It writes progress into a ref-based store that the renderers read every frame, and pushes the chapter into React state only when it changes.
+- `storyTime.ts` turns the scroll position into story time (a pure function, unit-tested). `useScrollStory` writes it into a plain shared object (`story.ts`) that the renderers read every frame. The active chapter stays with the IntersectionObserver from Task 2.
 - Teardown leader lines that draw in, the seam ignition flicker on load, the sliding chapter-rail marker, card hover states and the copy feedback.
 - Reduced motion: fixed poses with crossfades and no flicker. The SVG logo follows the active section's pose, so every fallback path also tells the story.
 
@@ -122,7 +122,7 @@ None. The tasks run in order, because each one builds on the last: the static si
 |---|---|
 | Headless Edge may not render WebGL | Try SwiftShader flags (`--use-angle=swiftshader --enable-unsafe-swiftshader`) early in Task 4. If that fails, Dave checks the 3D visually. |
 | Low-end phones struggle with bloom and metal materials | drei `PerformanceMonitor` lowers DPR and turns bloom off. The SVG fallback is always available. |
-| Mobile address-bar resizes break scroll pinning | Use CSS `position: sticky/fixed` instead of GSAP pinning, and ScrollTrigger `ignoreMobileResize`. |
+| Mobile address-bar resizes break scroll pinning | Use CSS `position: sticky/fixed` instead of GSAP pinning, and re-measure sections with a ResizeObserver. |
 | Bevels look wrong on the sharp chamfers | Tune `bevelSegments` and size. Fall back to no bevel plus an edge-highlight material. |
 | Library versions are newer than my training data | Check against installed type definitions, docs and real builds rather than memory. |
 
@@ -130,7 +130,7 @@ None. The tasks run in order, because each one builds on the last: the static si
 
 - **Oxlint instead of ESLint.** It's the template default, it's fast, and it avoids the typescript-eslint/TS 7 conflict. The spec is updated to match.
 - **The logo geometry lives in one file** (`logoPaths.ts`), shared by the SVG and the 3D logo.
-- **Native scroll with ScrollTrigger.** No smooth-scroll library and no drei `ScrollControls`, so scrolling always feels normal.
-- **CSS sticky positioning for the stage** instead of GSAP pinning. It's simpler and more reliable on phones.
+- **Native scroll, no GSAP.** A scroll listener plus pure functions (`storyTime`, `poseAt`) replaced GSAP ScrollTrigger in Task 3: the same effect, a smaller download, and one less library for Dave to learn. No smooth-scroll library and no drei `ScrollControls` either, so scrolling always feels normal.
+- **CSS sticky positioning for the stage** instead of scroll-pinning code. It's simpler and more reliable on phones.
 - **A ref-based story store for per-frame values.** React state is used only for the active chapter. This keeps 60 fps without re-rendering, and it's a good lesson for the code tour.
 - **No subagents.** I do the work in this session, as the session guidelines require.

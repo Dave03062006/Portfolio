@@ -88,7 +88,8 @@ The site is one page with five chapters. The chapter list reads **01 Intro, 02 A
 - **Meta line:** IMT · FULL STACK DEVELOPMENT · UNIVERSITAS CIPUTRA · CLASS OF 2028
 - **One-liner:** "I build apps for iPhone, Android and the web, and I lead the teams that run campus events."
 - **Scroll cue:** `SCROLL ↓`
-- **Exploded-view labels**, shown after the first scroll as HTML text with SVG leader lines:
+- **Layout:** the intro is two screens tall. The hero stays pinned for one screen of scrolling, which is when the logo turns and comes apart.
+- **Exploded-view labels**, shown after the first scroll as HTML text with SVG leader lines (on screens narrower than 1200px, a compact row of tags under the logo instead):
   - **D · DEVELOPER:** Swift · Kotlin · TypeScript
   - **T · TEAM:** SU IMT · O-Week · UKM Tabletop · TA
   - **CORE · ALWAYS LEARNING:** Informatics @ UC · GPA 3.77
@@ -190,7 +191,7 @@ Each card shows its course as a small caption. Every project here was a course's
 | Experience | Focus on the **T**: same treatment. |
 | Contact | The pieces reassemble, decelerating into place. The glow peaks and the logo faces front. |
 
-Every scroll animation uses GSAP ScrollTrigger with `scrub` and light smoothing (about 0.6 s). It stops when scrolling stops and rewinds exactly when scrolling back. There's no snapping.
+Every scroll animation follows one number, **story time** (`src/motion/storyTime.ts`): 0 → 1 while the intro's hero is pinned and the logo comes apart, then 1 → 2 through About, 2 → 3 through Projects, and so on. The logo eases toward it with light smoothing (about half a second). It stops when scrolling stops and rewinds exactly when scrolling back. There's no snapping. *(Built with a small scroll listener and pure functions instead of GSAP: same result, one less library.)*
 
 **Small feedback:** the chapter list's red marker slides to the active chapter (about 250 ms). Project cards get a red border and a brighter screenshot on hover. COPY becomes "Copied ✓" for 1.5 s. UI transitions take 200–400 ms with one "ease-out" curve family (`power3.out`).
 
@@ -218,7 +219,7 @@ Every scroll animation uses GSAP ScrollTrigger with `scrub` and light smoothing 
 
 ## 8. Code architecture
 
-**Tools:** Vite, React, TypeScript, React Three Fiber with drei and postprocessing, GSAP with ScrollTrigger and `@gsap/react`, CSS Modules with global CSS variables, Vitest, and Oxlint (the Vite template's default linter).
+**Tools:** Vite, React, TypeScript, React Three Fiber with drei and postprocessing, CSS Modules with global CSS variables, Vitest, and Oxlint (the Vite template's default linter).
 
 ```
 src/
@@ -229,7 +230,8 @@ src/
   three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
                  shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states)
   motion/        choreography.ts (pose keyframes + interpolation, pure functions),
-                 useScrollStory.ts (ScrollTrigger setup), ChapterContext.tsx (active chapter)
+                 storyTime.ts (scroll → story time), useScrollStory.ts, useStoryTime.ts,
+                 ChapterProvider.tsx (active chapter)
   styles/        tokens.css, global.css
   App.tsx
 public/          images/, cv.pdf, favicon.svg
@@ -280,7 +282,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
 - context (the active chapter)
 - conditional rendering (optional links)
 - TypeScript types for content
-- the basics of React Three Fiber and GSAP ScrollTrigger
+- the basics of React Three Fiber, and how scrolling drives the animation (story time)
 
 It ends with step-by-step recipes: add a project, add an experience, change the red, swap in photos, and deploy.
 

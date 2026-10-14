@@ -2,6 +2,7 @@ import styles from './App.module.css'
 import { ChapterRail } from './components/ChapterRail'
 import { TopBar } from './components/TopBar'
 import { ChapterProvider } from './motion/ChapterProvider'
+import { useScrollStory } from './motion/useScrollStory'
 import { About } from './sections/About'
 import { Contact } from './sections/Contact'
 import { Experience } from './sections/Experience'
@@ -14,6 +15,9 @@ import { Stage } from './three/Stage'
  * and the five chapters scroll inside it.
  */
 export default function App() {
+  // Turns scrolling into "story time", which the logo follows (see src/motion/storyTime.ts).
+  useScrollStory()
+
   return (
     <ChapterProvider>
       <a className="skip-link" href="#main">

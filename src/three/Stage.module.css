@@ -10,7 +10,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
   pointer-events: none;
 }
 
@@ -27,14 +26,20 @@
   opacity: 0.55;
 }
 
+/* Holds the logo and its labels. The labels are positioned against this box. */
 .frame {
   position: relative;
-  width: min(74vw, 20rem);
+  width: min(68vw, 18rem);
+  transition: opacity 200ms var(--ease-out); /* the reduced-motion crossfade */
 }
 
 .figure {
   display: none;
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9%;
+  text-align: center;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.18em;

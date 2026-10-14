@@ -1,23 +1,23 @@
+/* Two screens tall: the hero is pinned for one screen of scrolling while the logo comes apart. */
 .intro {
   position: relative;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  min-height: 200svh;
 }
 
 /* Phone: the logo shows through this gap at the top */
 .window {
-  flex: none;
   height: 46svh;
 }
 
+/* Phone: pinned just below the logo, with a solid background so later content can't show through */
 .hero {
-  position: relative;
-  flex: 1;
+  position: sticky;
+  top: 46svh;
+  min-height: 54svh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 var(--space-5) var(--space-9);
+  padding: 0 var(--space-5) var(--space-8);
   background: linear-gradient(transparent, var(--bg) 3rem);
 }
 
@@ -56,7 +56,7 @@
 
 .scroll {
   position: absolute;
-  bottom: var(--space-5);
+  bottom: var(--space-4);
   left: var(--space-5);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -65,12 +65,15 @@
   color: var(--text-3);
 }
 
+/* Tablet and up: the hero fills the screen, text at the bottom left, logo on the right */
 @media (min-width: 768px) {
   .window {
     display: none;
   }
 
   .hero {
+    top: 0;
+    height: 100svh;
     margin-left: 6vw;
     padding: 0 0 15svh;
     background: none;
@@ -81,7 +84,7 @@
   }
 
   .scroll {
-    left: 6vw;
+    left: 0;
     bottom: var(--space-6);
   }
 }
@@ -89,10 +92,6 @@
 @media (min-width: 1024px) {
   .hero {
     margin-left: 16vw;
-  }
-
-  .scroll {
-    left: 16vw;
   }
 
   .meta {

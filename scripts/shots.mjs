@@ -4,7 +4,7 @@
 // Usage (build first):
 //   npm run build
 //   npm run shots                          all chapters, at laptop, tablet and phone sizes
-//   npm run shots -- --at=0,0.12,about     scroll positions: 0–1 fractions of the page, or section ids
+//   npm run shots -- --at=0,0.12,about     scroll positions: 0–1 fractions of the page, pixels (760px), or section ids
 //   npm run shots -- --only=phone          one viewport only (desktop | tablet | phone)
 //   npm run shots -- --reduced-motion      as if "reduce motion" is on in the OS
 //   npm run shots -- --no-webgl            as if the browser has no 3D support
@@ -80,9 +80,10 @@ try {
         await page.evaluate((t) => {
           const max = document.documentElement.scrollHeight - window.innerHeight
           const asNumber = Number(t)
-          const top = Number.isNaN(asNumber)
-            ? (document.getElementById(t)?.getBoundingClientRect().top ?? 0) + window.scrollY
-            : asNumber * max
+          let top
+          if (t.endsWith('px')) top = Number.parseFloat(t) // exact pixels, e.g. 760px
+          else if (!Number.isNaN(asNumber)) top = asNumber * max // a fraction of the page, e.g. 0.5
+          else top = (document.getElementById(t)?.getBoundingClientRect().top ?? 0) + window.scrollY
           window.scrollTo({ top, behavior: 'instant' })
         }, target)
         await page.waitForTimeout(900) // scroll-linked animation eases into place

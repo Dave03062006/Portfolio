@@ -15,17 +15,23 @@ const CHIP_CELLS = [0, 1, 2, 3].flatMap((row) =>
   [0, 1, 2].map((col) => ({ x: 20 + col * 9, y: 8 + row * 9, hot: row === 1 && col === 1 })),
 )
 
-type FallbackLogoProps = { pose: Pose; className?: string }
+type FallbackLogoProps = {
+  pose: Pose
+  /** Play the neon flicker once when the logo first appears. */
+  ignite?: boolean
+  className?: string
+}
 
 /**
  * The flat SVG version of the logo, drawn from a Pose. It shows while the 3D logo loads,
  * and replaces it entirely on devices without 3D support.
  */
-export function FallbackLogo({ pose, className }: FallbackLogoProps) {
+export function FallbackLogo({ pose, ignite = false, className }: FallbackLogoProps) {
   // SVG gradients need unique ids. useId gives one; the replace keeps it safe inside url(#…).
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const layout = fallbackLayout(pose)
   const { d, t, core } = layout
+  const igniteClass = ignite ? styles.ignite : undefined
 
   return (
     <svg viewBox="0 0 260 220" className={`${styles.logo} ${className ?? ''}`} aria-hidden="true">
@@ -60,19 +66,22 @@ export function FallbackLogo({ pose, className }: FallbackLogoProps) {
         cx="130" cy="110" rx="110" ry="80"
         fill="#ff1f35"
         filter={`url(#${id}-haze)`}
-        className={styles.fade}
+       
         style={{ opacity: layout.ambientGlow }}
       />
 
-      {/* Light inside the seam. The pieces cover it, so it only shows through the gap. */}
-      <g className={styles.fade} style={{ opacity: layout.seamGlow, transform: 'translate(30px, 10px)' }}>
-        <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="6" filter={`url(#${id}-glow)`} />
-        <path d={SEAM_LINE} fill="none" stroke="#ff8a95" strokeWidth="3" />
+      {/* Light inside the seam. The pieces cover it, so it only shows through the gap.
+          The flicker sits on its own wrapper: a CSS animation would override the inline opacity. */}
+      <g className={igniteClass}>
+        <g style={{ opacity: layout.seamGlow, transform: 'translate(30px, 10px)' }}>
+          <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="6" filter={`url(#${id}-glow)`} />
+          <path d={SEAM_LINE} fill="none" stroke="#ff8a95" strokeWidth="3" />
+        </g>
       </g>
 
       {/* The core chip, hidden between the pieces until they move apart */}
-      <g className={styles.piece} style={{ opacity: core.opacity, transform: 'translate(122px, 82px)' }}>
-        <rect width="64" height="56" rx="4" fill="#ff1f35" filter={`url(#${id}-glow)`} className={styles.fade} style={{ opacity: core.glow }} />
+      <g style={{ opacity: core.opacity, transform: 'translate(122px, 82px)' }}>
+        <rect width="64" height="56" rx="4" fill="#ff1f35" filter={`url(#${id}-glow)`} style={{ opacity: core.glow }} />
         <rect x="0.8" y="0.8" width="62.4" height="54.4" rx="4" fill="#24060a" stroke="#ff3a4a" strokeWidth="1.6" />
         {CHIP_CELLS.map((cell) => (
           <rect
@@ -85,23 +94,25 @@ export function FallbackLogo({ pose, className }: FallbackLogoProps) {
       </g>
 
       {/* D */}
-      <g className={styles.piece} style={{ opacity: d.opacity, transform: `translate(${d.x}px, ${d.y}px)` }}>
-        <path d={D_EDGE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} className={styles.fade} style={{ opacity: d.highlight }} />
-        <path d={D_HOLE} fill={`url(#${id}-window)`} />
+      <g style={{ opacity: d.opacity, transform: `translate(${d.x}px, ${d.y}px)` }}>
+        <path d={D_EDGE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: d.highlight }} />
+        <path d={D_HOLE} fill={`url(#${id}-window)`} className={igniteClass} />
         <path d={D_SHAPE} fillRule="evenodd" fill={`url(#${id}-metal)`} stroke="#ffffff" strokeOpacity="0.12" />
-        <path d={D_EDGE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" className={styles.fade} style={{ opacity: d.highlight }} />
+        <path d={D_EDGE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" style={{ opacity: d.highlight }} />
       </g>
 
       {/* T */}
-      <g className={styles.piece} style={{ opacity: t.opacity, transform: `translate(${t.x}px, ${t.y}px)` }}>
-        <path d={T_SHAPE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} className={styles.fade} style={{ opacity: t.highlight }} />
+      <g style={{ opacity: t.opacity, transform: `translate(${t.x}px, ${t.y}px)` }}>
+        <path d={T_SHAPE} fill="none" stroke="#ff1f35" strokeWidth="3" filter={`url(#${id}-glow)`} style={{ opacity: t.highlight }} />
         <path d={T_SHAPE} fill={`url(#${id}-metal)`} stroke="#ffffff" strokeOpacity="0.12" />
-        <path d={T_SHAPE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" className={styles.fade} style={{ opacity: t.highlight }} />
+        <path d={T_SHAPE} fill="none" stroke="#ff4d5b" strokeWidth="1.5" style={{ opacity: t.highlight }} />
       </g>
 
       {/* Red light spilling onto the metal around the seam */}
-      <g className={styles.fade} style={{ opacity: layout.seamGlow * 0.22, transform: 'translate(30px, 10px)' }}>
-        <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="10" filter={`url(#${id}-glow)`} />
+      <g className={igniteClass}>
+        <g style={{ opacity: layout.seamGlow * 0.22, transform: 'translate(30px, 10px)' }}>
+          <path d={SEAM_LINE} fill="none" stroke="#ff1f35" strokeWidth="10" filter={`url(#${id}-glow)`} />
+        </g>
       </g>
     </svg>
   )

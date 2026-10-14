@@ -5,20 +5,38 @@
   overflow: visible;
 }
 
-/* Pieces glide between poses; glows fade. */
-.piece {
-  transition:
-    transform 700ms var(--ease-out),
-    opacity 500ms var(--ease-out);
+/* No CSS transitions here: the logo is redrawn on every frame as the page scrolls,
+   so it already moves smoothly. Transitions would only make it lag behind. */
+
+/* A neon tube striking: a few stuttering flashes, then it holds. Plays once, on load. */
+.ignite {
+  animation: ignite 900ms linear 250ms both;
 }
 
-.fade {
-  transition: opacity 500ms var(--ease-out);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .piece,
-  .fade {
-    transition: none;
+@keyframes ignite {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  12% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  24% {
+    opacity: 0.25;
+  }
+  38% {
+    opacity: 1;
+  }
+  44% {
+    opacity: 0.55;
+  }
+  60%,
+  100% {
+    opacity: 1;
   }
 }
