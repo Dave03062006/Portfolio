@@ -35,7 +35,12 @@ export function Contact() {
       </dl>
 
       {contact.cvUrl && (
-        <a href={contact.cvUrl} className={styles.cv} download>
+        // `download` saves the file under a proper name instead of "cv.pdf".
+        <a
+          href={contact.cvUrl}
+          className={styles.cv}
+          download={`${profile.firstName} ${profile.lastName} CV.pdf`}
+        >
           Download CV <span aria-hidden="true">↓</span>
         </a>
       )}

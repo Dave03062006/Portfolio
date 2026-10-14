@@ -133,7 +133,7 @@
   }
 
   .medium .media {
-    flex: 0 0 13rem;
+    flex: 0 0 44%;
     aspect-ratio: auto;
     border-bottom: 0;
     border-right: 1px solid #1f1f23;

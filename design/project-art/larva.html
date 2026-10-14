@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Larva illustration</title>
+    <link rel="stylesheet" href="/node_modules/@fontsource-variable/jetbrains-mono/index.css" />
+    <link rel="stylesheet" href="./art.css" />
+  </head>
+  <body>
+    <!-- Larva: Apple Watch (left), iPhone with route + leaderboard (centre), cosmetics shop (right) -->
+    <svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="near" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="far" />
+          <feMerge><feMergeNode in="far" /><feMergeNode in="near" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <radialGradient id="haze" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#ff1f35" stop-opacity="0.16" />
+          <stop offset="1" stop-color="#ff1f35" stop-opacity="0" />
+        </radialGradient>
+        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M50 0H0V50" fill="none" stroke="#141418" stroke-width="1.5" />
+        </pattern>
+        <radialGradient id="fadeGrad" cx="0.5" cy="0.5" r="0.62">
+          <stop offset="0.35" stop-color="#fff" />
+          <stop offset="1" stop-color="#000" />
+        </radialGradient>
+        <mask id="fade"><rect width="1600" height="1000" fill="url(#fadeGrad)" /></mask>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0 0L10 5L0 10z" fill="#ff2d3d" />
+        </marker>
+        <clipPath id="screen"><rect x="666" y="156" width="268" height="668" rx="36" /></clipPath>
+      </defs>
+
+      <rect width="1600" height="1000" fill="#060607" />
+      <rect width="1600" height="1000" fill="url(#grid)" mask="url(#fade)" />
+      <ellipse cx="800" cy="480" rx="640" ry="420" fill="url(#haze)" />
+      <path class="soft" d="M40 80V40H80M1520 40H1560V80M40 920V960H80M1560 920V960H1520" />
+      <text class="fig" x="100" y="955">FIG. 03.2 · LARVA · iOS + watchOS</text>
+
+      <!-- iPhone -->
+      <rect class="line" x="650" y="140" width="300" height="700" rx="50" />
+      <rect x="666" y="156" width="268" height="668" rx="36" fill="#0e0e11" stroke="#1f1f24" />
+
+      <!-- Screen: route map -->
+      <g clip-path="url(#screen)">
+        <g stroke="#17171b" stroke-width="14" stroke-linecap="round">
+          <path d="M640 300L960 262" />
+          <path d="M640 440L960 476" />
+          <path d="M724 190L766 560" />
+          <path d="M866 190L826 560" />
+        </g>
+        <g stroke="#131317" stroke-width="6">
+          <path d="M640 368L960 384" />
+          <path d="M790 190L800 560" />
+        </g>
+        <rect x="666" y="548" width="268" height="276" fill="#0e0e11" />
+      </g>
+      <rect x="750" y="172" width="100" height="28" rx="14" fill="#1a1a1e" />
+      <path d="M700 500C735 470 728 430 760 410S820 380 840 330S880 262 905 246" fill="none" stroke="#ff2d3d" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
+      <circle cx="700" cy="500" r="9" fill="#0e0e11" stroke="#ff2d3d" stroke-width="3" />
+      <circle cx="905" cy="246" r="8" fill="#ff2d3d" filter="url(#glow)" />
+
+      <!-- Screen: stats -->
+      <text class="tiny" x="690" y="580">DIST</text>
+      <text class="tiny" x="776" y="580">TIME</text>
+      <text class="tiny" x="862" y="580" style="fill: #ff4d5b">PTS</text>
+      <rect x="690" y="592" width="56" height="8" rx="4" fill="#2a2a2f" />
+      <rect x="776" y="592" width="56" height="8" rx="4" fill="#2a2a2f" />
+      <rect x="862" y="592" width="48" height="8" rx="4" fill="#ff2d3d" />
+
+      <!-- Screen: friends leaderboard -->
+      <text class="tiny" x="690" y="634" style="fill: #ff4d5b">FRIENDS</text>
+      <rect x="682" y="648" width="236" height="46" rx="12" fill="#ff2d3d" fill-opacity="0.08" stroke="#ff2d3d" stroke-width="2" filter="url(#glow)" />
+      <text class="label" x="702" y="678" style="font-size: 17px">1</text>
+      <circle cx="740" cy="671" r="13" fill="none" stroke="#ff2d3d" stroke-width="2" />
+      <rect x="764" y="666" width="80" height="10" rx="5" fill="#3a3a40" />
+      <rect x="860" y="666" width="42" height="10" rx="5" fill="#ff2d3d" />
+      <rect x="682" y="703" width="236" height="46" rx="12" fill="none" stroke="#26262b" stroke-width="2" />
+      <text class="tiny" x="703" y="732" style="font-size: 16px; fill: #8a8a92">2</text>
+      <circle cx="740" cy="726" r="13" fill="none" stroke="#4a4a52" stroke-width="2" />
+      <rect x="764" y="721" width="96" height="10" rx="5" fill="#2a2a2f" />
+      <rect x="872" y="721" width="30" height="10" rx="5" fill="#4a4a52" />
+      <rect x="682" y="758" width="236" height="46" rx="12" fill="none" stroke="#26262b" stroke-width="2" />
+      <text class="tiny" x="703" y="787" style="font-size: 16px; fill: #8a8a92">3</text>
+      <circle cx="740" cy="781" r="13" fill="none" stroke="#4a4a52" stroke-width="2" />
+      <rect x="764" y="776" width="70" height="10" rx="5" fill="#2a2a2f" />
+      <rect x="878" y="776" width="24" height="10" rx="5" fill="#4a4a52" />
+
+      <!-- Apple Watch -->
+      <rect x="412" y="326" width="126" height="84" rx="20" fill="#0e0e11" stroke="#3a3a40" stroke-width="2" />
+      <rect x="412" y="620" width="126" height="84" rx="20" fill="#0e0e11" stroke="#3a3a40" stroke-width="2" />
+      <rect x="570" y="470" width="12" height="40" rx="4" fill="#3a3a40" />
+      <rect x="570" y="528" width="8" height="30" rx="3" fill="#2a2a2f" />
+      <rect class="line" x="380" y="400" width="190" height="230" rx="48" />
+      <rect x="396" y="416" width="158" height="198" rx="36" fill="#0e0e11" stroke="#1f1f24" />
+      <circle cx="475" cy="515" r="58" fill="none" stroke="#26262b" stroke-width="14" />
+      <path d="M475 457A58 58 0 1 1 424.8 486" fill="none" stroke="#ff2d3d" stroke-width="14" stroke-linecap="round" filter="url(#glow)" />
+      <circle cx="475" cy="515" r="36" fill="none" stroke="#26262b" stroke-width="12" />
+      <path d="M475 479A36 36 0 1 1 462.7 548.8" fill="none" stroke="#ff8a95" stroke-width="12" stroke-linecap="round" />
+
+      <!-- Sync between watch and phone -->
+      <path d="M592 472Q618 450 642 470" class="dash" marker-end="url(#arrow)" />
+      <path d="M642 512Q618 534 592 514" class="dash" marker-end="url(#arrow)" />
+      <text class="tiny" x="617" y="440" text-anchor="middle">SYNC</text>
+
+      <!-- Cosmetics shop: one item equipped -->
+      <rect x="1080" y="330" width="116" height="116" rx="18" fill="#ff2d3d" fill-opacity="0.08" stroke="#ff2d3d" stroke-width="2.5" filter="url(#glow)" />
+      <rect x="1218" y="330" width="116" height="116" rx="18" class="line" style="stroke: #3a3a40; stroke-width: 2" />
+      <rect x="1080" y="468" width="116" height="116" rx="18" class="line" style="stroke: #3a3a40; stroke-width: 2" />
+      <rect x="1218" y="468" width="116" height="116" rx="18" class="line" style="stroke: #3a3a40; stroke-width: 2" />
+      <path d="M1148 354L1116 398H1136L1128 428L1162 380H1141Z" fill="#ff2d3d" stroke="#ff2d3d" stroke-width="2" stroke-linejoin="round" filter="url(#glow)" />
+      <circle cx="1196" cy="332" r="14" fill="#ff2d3d" />
+      <path d="M1189 332L1194 337L1203 327" fill="none" stroke="#060607" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M1250 410L1254 376L1266 392L1276 368L1286 392L1298 376L1302 410Z" fill="none" stroke="#8a8a92" stroke-width="2.5" stroke-linejoin="round" />
+      <circle cx="1150" cy="526" r="13" fill="none" stroke="#8a8a92" stroke-width="2.5" />
+      <path d="M1135 518H1108M1136 528H1114M1140 538H1120" stroke="#4a4a52" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M1276 500L1284 518L1304 520L1289 533L1294 552L1276 542L1258 552L1263 533L1248 520L1268 518Z" fill="none" stroke="#8a8a92" stroke-width="2.5" stroke-linejoin="round" />
+
+      <!-- Captions -->
+      <text class="label" x="475" y="770" text-anchor="middle">APPLE WATCH</text>
+      <text class="note" x="475" y="798" text-anchor="middle">steps, synced to phone</text>
+      <text class="label" x="800" y="892" text-anchor="middle">ROUTE + LEADERBOARD</text>
+      <text class="note" x="800" y="920" text-anchor="middle">Swift · Firebase</text>
+      <text class="label" x="1207" y="650" text-anchor="middle">SHOP + EQUIP</text>
+      <text class="note" x="1207" y="678" text-anchor="middle">cosmetic effects</text>
+    </svg>
+  </body>
+</html>

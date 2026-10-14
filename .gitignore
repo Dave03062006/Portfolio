@@ -25,3 +25,7 @@ npm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Dave's CV: kept out of git until he picks the version to publish
+# (the current one includes his phone number). Remove this line to commit it.
+public/cv.pdf

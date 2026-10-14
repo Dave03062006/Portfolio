@@ -22,6 +22,11 @@ export type Photo = {
   src: string
   /** Describes the image for people who can't see it. */
   alt: string
+  /**
+   * Which part to keep in view when the frame crops the image, as "x% y%".
+   * Leave it out to keep the middle. Example: '66% 50%' keeps the right-hand side.
+   */
+  focalPoint?: string
 }
 
 export type SpecRow = { label: string; value: string }

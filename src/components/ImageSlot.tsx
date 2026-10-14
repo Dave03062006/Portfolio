@@ -26,6 +26,7 @@ export function ImageSlot({ photo, placeholder, className }: ImageSlotProps) {
       {status !== 'missing' && (
         <img
           className={styles.image}
+          style={{ objectPosition: photo.focalPoint }}
           src={photo.src}
           alt={photo.alt}
           loading="lazy"

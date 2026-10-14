@@ -6,7 +6,8 @@ export const projectsCopy: SectionCopy = {
   lead: 'Mostly team projects, so each one says which part was mine.',
 }
 
-// The cards appear in this order. Screenshots go in public/images/projects/ (16:10).
+// The cards appear in this order. Card images live in public/images/projects/ (16:10).
+// They're illustrations drawn in design/project-art/. Edit those, then run `node scripts/render-art.mjs`.
 export const projects: Project[] = [
   {
     slug: 'alp-vp',
@@ -22,7 +23,10 @@ export const projects: Project[] = [
       { label: 'App code', href: 'https://github.com/Dave03062006/ALP_VP_Frontend' },
       { label: 'API code', href: 'https://github.com/Dave03062006/ALP_Backend' },
     ],
-    image: { src: '/images/projects/alp-vp.jpg', alt: 'Screens from the ALP_VP Android app' },
+    image: {
+      src: '/images/projects/alp-vp.jpg',
+      alt: 'Illustration: the ALP_VP Android app charting spending per game, its points turning into gacha rewards and vouchers, and the TypeScript API and database behind it',
+    },
   },
   {
     slug: 'larva',
@@ -36,7 +40,10 @@ export const projects: Project[] = [
     myPart:
       'All front-end design, the leaderboard and shop screens, and the logic that applies unlocked customizations.',
     links: [{ label: 'Code', href: 'https://github.com/E-Fredrik/Larva' }],
-    image: { src: '/images/projects/larva.jpg', alt: 'Screens from the Larva iPhone and Apple Watch app' },
+    image: {
+      src: '/images/projects/larva.jpg',
+      alt: 'Illustration: Larva on an Apple Watch and an iPhone, showing activity rings, a workout route, the friends leaderboard and the cosmetics shop',
+    },
   },
   {
     slug: 'imperial-kost',
@@ -51,7 +58,11 @@ export const projects: Project[] = [
       { label: 'Live site', href: 'https://imperialf7.vercel.app' },
       { label: 'Code', href: 'https://github.com/E-Fredrik/imperialStatic' },
     ],
-    image: { src: '/images/projects/imperial-kost.jpg', alt: 'The Imperial Kost website' },
+    image: {
+      src: '/images/projects/imperial-kost.jpg',
+      alt: 'Illustration: the Imperial Kost website, with a floor plan of nine rooms, a 360° room view and the interactive map with distances to nearby landmarks',
+      focalPoint: '66% 50%', // keep the map (Dave's part) in view when the card crops the image
+    },
   },
   {
     slug: 'shutterspace',

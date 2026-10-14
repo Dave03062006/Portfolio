@@ -53,8 +53,8 @@ export const profile: Profile = {
         href: 'https://www.instagram.com/dave_tristian.n',
       },
     ],
-    // To show the "Download CV" button: put your CV at public/cv.pdf, then set this to '/cv.pdf'.
-    cvUrl: '',
+    // Your CV lives at public/cv.pdf. Set this to '' to hide the "Download CV" button.
+    cvUrl: '/cv.pdf',
   },
 
   footer: 'Designed and built by Dave Tristian · 2026 · Made with React',

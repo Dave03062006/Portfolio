@@ -1,0 +1,61 @@
+/* Shared styles for the project illustrations. Render them with: node scripts/render-art.mjs */
+html,
+body {
+  margin: 0;
+  background: #060607;
+}
+
+svg {
+  display: block;
+  width: 1600px;
+  height: 1000px;
+}
+
+text {
+  font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
+}
+
+.label {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  fill: #ff4d5b;
+}
+
+.note {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  fill: #8a8a92;
+}
+
+.tiny {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  fill: #6d6d75;
+}
+
+.fig {
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  fill: #45454c;
+}
+
+.line {
+  fill: #0b0b0d;
+  stroke: #d6d6db;
+  stroke-width: 2.5;
+}
+
+.soft {
+  fill: none;
+  stroke: #3a3a40;
+  stroke-width: 2;
+}
+
+.dash {
+  fill: none;
+  stroke: #ff2d3d;
+  stroke-width: 2;
+  stroke-dasharray: 6 8;
+}

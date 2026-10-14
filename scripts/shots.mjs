@@ -63,6 +63,15 @@ try {
     await page.waitForTimeout(1200) // let fonts settle and the intro play
 
     if (has('full')) {
+      // Scroll down the page like a visitor would, so lazily loaded images load, then go back up.
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.documentElement.scrollHeight; y += window.innerHeight / 2) {
+          window.scrollTo({ top: y, behavior: 'instant' })
+          await new Promise((resolve) => setTimeout(resolve, 120))
+        }
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      })
+      await page.waitForTimeout(1200)
       const file = `shots/${[tag, name, 'full'].filter(Boolean).join('-')}.png`
       await page.screenshot({ path: file, fullPage: true })
       console.log(`saved ${file}`)
