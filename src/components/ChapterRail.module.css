@@ -7,7 +7,7 @@
     display: block;
     position: fixed;
     z-index: 10;
-    left: 3vw;
+    left: var(--gutter);
     top: 50%;
     transform: translateY(-50%);
   }

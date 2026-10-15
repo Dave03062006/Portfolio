@@ -1,0 +1,100 @@
+/* Fills the logo's box, so the number follows the logo on every screen shape.
+   Sizes below in cqw are percentages of the logo's width. */
+.box {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  pointer-events: none;
+}
+
+/* Sits above the logo, with its lower part tucked behind the top of the pieces */
+.number {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: 62%;
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: 50cqw;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 45 61 / 0.3);
+}
+
+/* Tablet and up: there's room for it to be bigger */
+@media (min-width: 768px) {
+  .number {
+    font-size: 64cqw;
+  }
+}
+
+/* The digits come from data-number (decoration, so it isn't real text) */
+.number::before {
+  content: attr(data-number);
+}
+
+/* The new number is revealed from the top down, exactly as fast as the scan line moves */
+.in {
+  animation: draw-in 900ms var(--ease-out) both;
+}
+
+/* The scan line: a bright line along the bottom of a full-size layer, slid from the top of
+   the number to the bottom, with a soft red trail above it. The mask fades out its ends. */
+.in::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    transparent calc(100% - 1.75rem),
+    rgb(255 45 61 / 0.14) calc(100% - 2px),
+    var(--red-hot) calc(100% - 2px)
+  );
+  mask-image: linear-gradient(90deg, transparent 4%, #000 24%, #000 76%, transparent 96%);
+  animation: scan-down 900ms var(--ease-out) both;
+}
+
+.out {
+  animation: fade-out 300ms ease-out both;
+}
+
+@keyframes draw-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes scan-down {
+  from {
+    transform: translateY(-100%);
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .in {
+    animation: none;
+  }
+
+  .in::after,
+  .out {
+    display: none;
+  }
+}

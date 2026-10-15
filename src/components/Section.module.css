@@ -57,6 +57,26 @@
     display: none;
   }
 
+  /* The chapter's mark on the drawing sheet's left ruler (see SheetFrame): a red line where
+     the chapter starts, with its number underneath, written sideways */
+  .section::before {
+    content: attr(data-number);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--sheet);
+    overflow: hidden; /* with no sheet margin (--sheet: 0px), the mark disappears */
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--red);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 600;
+    line-height: var(--sheet);
+    letter-spacing: 0.08em;
+    color: var(--red-label);
+    writing-mode: vertical-rl;
+  }
+
   .content {
     margin-left: 6vw;
     width: 50vw;

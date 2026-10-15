@@ -1,0 +1,338 @@
+/*
+ * The drawing sheet around the screen. `--sheet` (in tokens.css) is the width of its margin:
+ * 0 on phones, where only the progress line shows.
+ */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 11; /* above the top bar, so the border runs over it */
+  pointer-events: none;
+}
+
+.band,
+.zones,
+.edge,
+.cross,
+.caret,
+.titleBlock,
+.ruler {
+  display: none;
+}
+
+/* ---- The progress line. Phone: down the right edge of the screen, below the top bar ---- */
+
+.progress {
+  position: absolute;
+  top: var(--topbar-h);
+  bottom: 0;
+  right: 4px; /* far enough in that the glowing tip isn't cut off by the screen edge */
+  width: 2px;
+}
+
+/* --progress (0 to 1) is set by SheetFrame.tsx as you scroll */
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  box-shadow:
+    0 0 0.4rem var(--red),
+    0 0 1.25rem rgb(255 45 61 / 0.5);
+  transform-origin: top;
+  transform: scaleY(var(--progress, 0));
+}
+
+.tip {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--progress, 0) * 100%);
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--red-hot);
+  box-shadow:
+    0 0 0.4rem var(--red),
+    0 0 1.25rem var(--red);
+  transform: translate(-50%, -50%);
+}
+
+/* ---- Tablet and up: the whole sheet ---- */
+
+@media (min-width: 768px) {
+  /* Solid strips in the top and bottom margins, so content scrolls under the sheet's edge */
+  .band {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--sheet);
+    background: var(--bg);
+  }
+
+  .bandTop {
+    top: 0;
+  }
+
+  .bandBottom {
+    bottom: 0;
+  }
+
+  /* Grid letters in the top margin, like a real drawing's zones */
+  .zones {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: var(--sheet);
+    right: var(--sheet);
+    height: var(--sheet);
+    animation: fade-in 800ms ease-out 700ms both;
+  }
+
+  .zones span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    color: #4d4d55;
+  }
+
+  .zones span:first-child {
+    border-left: 0;
+  }
+
+  /* The letter comes from data-zone (decoration, so it isn't real text) */
+  .zones span::before {
+    content: attr(data-zone);
+  }
+
+  /* The border draws itself on load, from two opposite corners */
+  .edge {
+    display: block;
+    position: absolute;
+    background: var(--line-strong);
+  }
+
+  .edgeTop,
+  .edgeBottom {
+    left: var(--sheet);
+    right: var(--sheet);
+    height: 1px;
+    animation: draw-across 1100ms var(--ease-out) 150ms both;
+  }
+
+  .edgeLeft,
+  .edgeRight {
+    top: var(--sheet);
+    bottom: var(--sheet);
+    width: 1px;
+    animation: draw-down 1100ms var(--ease-out) 150ms both;
+  }
+
+  .edgeTop {
+    top: var(--sheet);
+    transform-origin: left;
+  }
+
+  .edgeLeft {
+    left: var(--sheet);
+    transform-origin: top;
+  }
+
+  .edgeBottom {
+    bottom: var(--sheet);
+    transform-origin: right;
+  }
+
+  .edgeRight {
+    right: var(--sheet);
+    transform-origin: bottom;
+  }
+
+  /* Red registration marks on the four corners */
+  .cross {
+    display: block;
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: appear 500ms var(--ease-out) both;
+  }
+
+  .cross::before,
+  .cross::after {
+    content: '';
+    position: absolute;
+    background: var(--red-label);
+  }
+
+  .cross::before {
+    left: calc(50% - 0.5px);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+
+  .cross::after {
+    top: calc(50% - 0.5px);
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+
+  /* Centred on the corner where the border lines meet */
+  .topLeft {
+    top: calc(var(--sheet) - 0.625rem);
+    left: calc(var(--sheet) - 0.625rem);
+  }
+
+  .topRight {
+    top: calc(var(--sheet) - 0.625rem);
+    right: calc(var(--sheet) - 0.625rem);
+  }
+
+  .bottomLeft {
+    bottom: calc(var(--sheet) - 0.625rem);
+    left: calc(var(--sheet) - 0.625rem);
+  }
+
+  .bottomRight {
+    bottom: calc(var(--sheet) - 0.625rem);
+    right: calc(var(--sheet) - 0.625rem);
+  }
+
+  /* A small red pointer in the left margin, at the middle of the screen */
+  .caret {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0.4rem;
+    height: 0.6rem;
+    background: var(--red);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    transform: translateY(-50%);
+    animation: fade-in 800ms ease-out 700ms both;
+  }
+
+  /* The title block, tucked into the bottom-right corner inside the border */
+  .titleBlock {
+    display: grid;
+    grid-template-columns: auto auto;
+    position: absolute;
+    right: calc(var(--sheet) + 1px);
+    bottom: calc(var(--sheet) + 1px);
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line-strong);
+    background: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    animation: fade-in 800ms ease-out 900ms both;
+  }
+
+  .cell {
+    display: flex;
+    gap: 0.6em;
+    padding: 0.5rem 0.8rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .cell:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .cell:nth-child(n + 3) {
+    border-bottom: 0;
+  }
+
+  .cell b {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .chapterCell b {
+    color: var(--red-label);
+  }
+
+  /* The progress line now runs along the sheet's right border */
+  .progress {
+    top: var(--sheet);
+    bottom: var(--sheet);
+    right: var(--sheet);
+    width: 1.5px;
+    transform: translateX(50%);
+  }
+
+  /* ---- The rulers (SheetRulers): inside the page, in the left and right margins ---- */
+  .ruler {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--sheet);
+    pointer-events: none;
+    /* A long tick every 100px and a short one every 20px */
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.3) 1px, transparent 1px),
+      linear-gradient(rgb(255 255 255 / 0.13) 1px, transparent 1px);
+    background-size:
+      0.55rem 100px,
+      0.3rem 20px;
+    background-repeat: repeat-y;
+    animation: fade-in 800ms ease-out 600ms both;
+  }
+
+  .rulerLeft {
+    left: 0;
+    background-position: right top;
+  }
+
+  .rulerRight {
+    right: 0;
+    background-position: left top;
+  }
+}
+
+@keyframes draw-across {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes draw-down {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zones,
+  .edge,
+  .cross,
+  .caret,
+  .titleBlock,
+  .ruler {
+    animation: none;
+  }
+}

@@ -7,6 +7,7 @@ import { labelReveal, poseAt, restingTime } from '../motion/choreography'
 import { useCrossfade } from '../motion/useCrossfade'
 import { useReducedMotion } from '../motion/useReducedMotion'
 import { useStoryTime } from '../motion/useStoryTime'
+import { ChapterNumber } from './ChapterNumber'
 import { FallbackLogo } from './FallbackLogo'
 import type { StageState } from './LogoModel'
 import styles from './Stage.module.css'
@@ -86,6 +87,8 @@ export function Stage() {
     <div className={styles.stage} aria-hidden="true">
       <div className={styles.grid} />
       <div className={styles.frame} style={{ opacity: reduced && !visible ? 0 : 1 }}>
+        {/* First, so it sits behind the logo */}
+        <ChapterNumber number={chapter.number} />
         {!flatRetired && (
           <div className={styles.layer} style={{ opacity: show3D ? 0 : 1 }}>
             <FallbackLogo pose={pose} ignite={!reduced} />

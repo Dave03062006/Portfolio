@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { CHAPTERS } from '../content/chapters'
 import type { ChapterId, SectionCopy } from '../content/types'
 import text from '../styles/text.module.css'
 import styles from './Section.module.css'
@@ -14,12 +15,14 @@ type SectionProps = {
  * an optional lead line, then the chapter's own content.
  *
  * On phones it also adds a see-through gap at the top, where the logo shows before the
- * section's content scrolls up over it.
+ * section's content scrolls up over it. On bigger screens, `data-number` puts the
+ * chapter's red mark on the drawing sheet's ruler.
  */
 export function Section({ id, copy, children }: SectionProps) {
   const titleId = `${id}-title`
+  const number = CHAPTERS.find((chapter) => chapter.id === id)?.number
   return (
-    <section id={id} aria-labelledby={titleId} className={styles.section}>
+    <section id={id} aria-labelledby={titleId} className={styles.section} data-number={number}>
       <div className={styles.window} aria-hidden="true" />
       <div className={styles.content}>
         <p className={text.eyebrow}>{copy.eyebrow}</p>

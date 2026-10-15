@@ -1,0 +1,40 @@
+/* Both texts sit in the same grid cell, so the new one slides in exactly where the old one was */
+.roll {
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.roll > span {
+  grid-area: 1 / 1;
+}
+
+.in {
+  animation: roll-in 450ms var(--ease-out) both;
+}
+
+.out {
+  animation: roll-out 450ms var(--ease-out) both;
+}
+
+@keyframes roll-in {
+  from {
+    transform: translateY(110%);
+  }
+}
+
+@keyframes roll-out {
+  to {
+    transform: translateY(-110%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .in {
+    animation: none;
+  }
+
+  .out {
+    display: none;
+  }
+}

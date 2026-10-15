@@ -20,9 +20,10 @@ Contents:
 11. [Styling: CSS Modules and design tokens](#11-styling-css-modules-and-design-tokens)
 12. [The scroll story](#12-the-scroll-story)
 13. [The logo, flat and 3D](#13-the-logo-flat-and-3d)
-14. [Tests](#14-tests)
-15. [Recipes](#15-recipes)
-16. [Glossary](#16-glossary)
+14. [The drawing sheet and chapter moments](#14-the-drawing-sheet-and-chapter-moments)
+15. [Tests](#15-tests)
+16. [Recipes](#16-recipes)
+17. [Glossary](#17-glossary)
 
 ---
 
@@ -53,7 +54,10 @@ App
 │   ├── TopBar             the bar at the top
 │   ├── ChapterRail        the numbered list on the left (laptops)
 │   ├── Stage              the logo area (section 13)
+│   ├── SheetFrame         the drawing-sheet border around the screen (section 14)
+│   ├── ScanSweep          the red scan line, once per visit (section 14)
 │   └── main
+│       ├── SheetRulers    the rulers in the margins
 │       ├── Intro          01
 │       ├── About          02
 │       ├── Projects       03
@@ -199,7 +203,7 @@ Now open [`src/components/TimelineFilters.tsx`](../src/components/TimelineFilter
 
 This is how a child "talks up" to its parent. The parent owns the state and passes down both the value and a way to change it. It's called **lifting state up**, and it means one place (Experience) is in charge, so the tabs and the list can never disagree.
 
-The filtering rule lives in its own plain function, [`src/lib/experienceFilter.ts`](../src/lib/experienceFilter.ts), with no React in it at all. That makes it easy to test (section 14) and easy to read: under KEPANITIAAN, the Student Union entry also shows, with only its committee chips.
+The filtering rule lives in its own plain function, [`src/lib/experienceFilter.ts`](../src/lib/experienceFilter.ts), with no React in it at all. That makes it easy to test (section 15) and easy to read: under KEPANITIAAN, the Student Union entry also shows, with only its committee chips.
 
 > **Try it.** Change `useState<ExperienceFilter>('all')` to `useState<ExperienceFilter>('kepanitiaan')`. Reload. The Kepanitiaan tab starts selected.
 
@@ -372,9 +376,43 @@ Both draw the same shapes, from one file: [`src/brand/logoPaths.ts`](../src/bran
 
 ---
 
-## 14. Tests
+## 14. The drawing sheet and chapter moments
 
-Run `npm test`. 78 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
+The border around the screen, the big chapter number behind the logo and the red scan line were added after the first version, so the black edges have something to do. Each piece uses a different trick.
+
+**The sheet** ([`SheetFrame.tsx`](../src/components/SheetFrame.tsx)) is mostly CSS: a layer fixed over the page holding the border, the corner marks, the grid letters and the title block. The margin's width is one design token, `--sheet` in `tokens.css`: `1rem` on tablets and up, `0px` on phones, where only the progress line shows.
+
+- **The progress line moves without React.** On every scroll, an effect writes a CSS variable straight onto the line, `line.style.setProperty('--progress', '0.42')`, and the CSS turns it into a length with `transform: scaleY(var(--progress))`. State would re-render the component dozens of times a second for something CSS can draw by itself. (It's the same thinking as the refs in section 9.)
+- **The rulers aren't fixed to the screen at all.** [`SheetRulers`](../src/components/SheetFrame.tsx) puts two tall strips *inside the page*, so the browser scrolls them along with the content, perfectly in step, with no code. Their tick marks are CSS gradients repeated down the strip.
+- **Each chapter marks its own place on the ruler.** [`Section.tsx`](../src/components/Section.tsx) puts `data-number="03"` on its `<section>`, and a `::before` rule in `Section.module.css` draws a red line with that number (`content: attr(data-number)`). When the mark passes the small red pointer at the middle of the left margin, the chapter changes. It's the same middle line `ChapterProvider` watches.
+
+**Animating a change: keep the old value for a moment.** When the chapter changes, the title block's text rolls over like a counter ([`RollingText.tsx`](../src/components/RollingText.tsx)), and the big number fades while the new one is drawn in ([`ChapterNumber.tsx`](../src/three/ChapterNumber.tsx)). Both need the *old* value on screen next to the new one. The hook [`useOutgoing.ts`](../src/motion/useOutgoing.ts) remembers it:
+
+```ts
+const [state, setState] = useState({ value, outgoing: null })
+if (!Object.is(value, state.value)) {
+  setState({ value, outgoing: state.value })
+}
+```
+
+Setting state *while rendering* is usually a mistake, but this exact shape (compare with the previous value, then update) is React's own recipe for reacting to a changed prop. A timer in an effect clears `outgoing` once the animation is over. Each value then gets its own element through `key`:
+
+```tsx
+<span key={`out-${outgoing}`} className={styles.out}>{outgoing}</span>
+<span key={`in-${text}`} className={styles.in}>{text}</span>
+```
+
+A new key means a brand-new element, and a brand-new element plays its CSS animation from the start. That's the whole trick.
+
+**The one-time sweep** ([`ScanSweep.tsx`](../src/components/ScanSweep.tsx)) plays the first time you scroll out of the intro, and never again on that visit. A ref remembers the last chapter and whether it has played: bookkeeping, so a ref rather than state. The decision is a pure function, `shouldSweep` in [`src/lib/sheet.ts`](../src/lib/sheet.ts), so it's easy to test. The movement uses the browser's **Web Animations API**, `element.animate(keyframes, timing)`, which is a CSS animation started from JavaScript. The red tint is `mix-blend-mode: multiply`: red times white text gives red text, while red times black stays black.
+
+> **Try it.** In `ScanSweep.tsx`, change `duration: 1800` to `5000`. Reload at the top of the page and scroll down into About to watch the sweep in slow motion. Then in `tokens.css`, try `--sheet: 2rem` for a wider margin. (Undo both.)
+
+---
+
+## 15. Tests
+
+Run `npm test`. 90 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
 
 ```ts
 it('shows only teaching under TEACHING', () => {
@@ -387,7 +425,7 @@ it('shows only teaching under TEACHING', () => {
 
 Pure functions, like the filter, `storyTime`, `poseAt` and the logo geometry, are the easiest things to test. That's one reason the project keeps logic out of components.
 
-[`src/components/CopyButton.test.tsx`](../src/components/CopyButton.test.tsx) tests a component like a user would: render it, click it, read what's on screen. It also fakes the clock, so it can skip 1.5 seconds instantly.
+[`src/components/CopyButton.test.tsx`](../src/components/CopyButton.test.tsx) tests a component like a user would: render it, click it, read what's on screen. It also fakes the clock, so it can skip 1.5 seconds instantly. [`RollingText.test.tsx`](../src/components/RollingText.test.tsx) does the same with the title block's roll: both texts on screen mid-roll, then only the new one.
 
 [`src/content/content.test.ts`](../src/content/content.test.ts) checks your content: every project says what you did, every link is a real https address, and the CV button only turns on when the CV file exists.
 
@@ -395,7 +433,7 @@ Pure functions, like the filter, `storyTime`, `poseAt` and the logo geometry, ar
 
 ---
 
-## 15. Recipes
+## 16. Recipes
 
 **Before publishing anything,** run these four. If all pass, you're safe:
 
@@ -436,6 +474,9 @@ In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, t
 ### Change the logo's labels
 `teardown` in `profile.ts`. Keep each label about its own part: D is Developer, T is Team, and the core is Always learning.
 
+### Turn the drawing sheet off
+In `App.tsx`, delete `<SheetFrame />`, `<ScanSweep />` and `<SheetRulers />` (and their imports). In `tokens.css`, set `--sheet: 0px` inside the tablet block too: the top bar moves back up and the chapter marks on the ruler disappear. The big number behind the logo is separate: it's `<ChapterNumber />` in `Stage.tsx`.
+
 ### Update the live site
 Once the site is connected to Vercel (see the README), every `git push` to `main` publishes automatically:
 
@@ -447,7 +488,7 @@ git push
 
 ---
 
-## 16. Glossary
+## 17. Glossary
 
 | Term | Meaning |
 |---|---|
@@ -472,6 +513,8 @@ git push
 | **React Three Fiber** | A library that lets you build three.js 3D scenes with React components. |
 | **Story time** | This project's single number for "how far along the page you are", which every animation follows. |
 | **Pose** | How the logo looks at one moment: spread, focus, glow and rotation. |
+| **Web Animations API** | `element.animate(...)`: the browser's way to play an animation from JavaScript, with no React state involved. |
+| **Blend mode** | How a layer's colors mix with what's underneath. `multiply` darkens: red over white gives red, red over black stays black. |
 
 ### Where to go next
 - [react.dev/learn](https://react.dev/learn), React's official tutorial. Its "Thinking in React" page fits this project well.

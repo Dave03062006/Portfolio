@@ -54,7 +54,6 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 9%;
   text-align: center;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -77,8 +76,10 @@
     width: min(38vw, 34rem);
   }
 
+  /* Raised clear of the drawing sheet's title block in the corner below */
   .figure {
     display: block;
+    bottom: calc(var(--sheet) + 5rem);
   }
 }
 

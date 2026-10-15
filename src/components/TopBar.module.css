@@ -66,9 +66,12 @@
   transform: translateY(-3px);
 }
 
+/* Tablet and up: the bar sits inside the drawing sheet's top margin (see SheetFrame) */
 @media (min-width: 768px) {
   .bar {
-    padding: 0 3vw;
+    top: var(--sheet);
+    height: calc(var(--topbar-h) - var(--sheet));
+    padding: 0 var(--gutter);
   }
 
   .brandText {

@@ -162,8 +162,8 @@ Each card shows its course as a small caption. Every project here was a course's
 
 ## 4. Layout
 
-- **Desktop (1024px and wider):** a fixed chapter list on the left, a content column of about 42% of the width, and a sticky 3D stage on the right (about 38%) with a faint grid behind it. The top bar is fixed.
-- **Tablet (768–1023px):** the chapter list moves into the top bar as "03 PROJECTS" with a menu button. The content column gets wider and the stage gets smaller.
+- **Desktop (1024px and wider):** a fixed chapter list on the left, a content column of about 42% of the width, and a sticky 3D stage on the right (about 38%) with a faint grid behind it. The top bar is fixed. The whole screen is framed as a drawing sheet (section 6.4).
+- **Tablet (768–1023px):** the chapter list moves into the top bar as "03 PROJECTS" with a menu button. The content column gets wider and the stage gets smaller. The drawing sheet frames the screen here too.
 - **Phone (under 768px):** the top bar shows the current chapter, and its menu button opens a sheet with all five chapters. The 3D canvas is pinned to roughly the top 40% of the screen. Each section starts with a see-through spacer, so its logo state is visible, and then its content scrolls up over the logo on a solid background.
 
 ## 5. The 3D logo
@@ -184,8 +184,9 @@ Each card shows its course as a small caption. Every project here was a course's
 
 | Moment | What happens |
 |---|---|
-| Page load | The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. |
-| Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
+| Page load | The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. The drawing sheet's border draws itself in, and the chapter number is scanned in behind the logo (section 6.4). |
+| Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. The first time per visit, a red scan line sweeps down the whole screen. |
+| Every chapter change | The big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
 | About | Focus on the **core**: its glow rises while the D and T dim and move back. |
 | Projects | Focus on the **D**: it moves toward the viewer with a red edge light. The T and core dim. |
 | Experience | Focus on the **T**: same treatment. |
@@ -207,6 +208,27 @@ Every scroll animation follows one number, **story time** (`src/motion/storyTime
 - **No WebGL or 3D error:** an error boundary swaps in the flat SVG drawings of each state, the same ones used in the mockups.
 - **Hidden tab:** rendering pauses.
 
+### 6.4 The drawing sheet and chapter moments (added 2026-10-15)
+
+After seeing the finished site, Dave liked the design but found the effects "a bit lackluster", especially the mostly black outer edges. He compared four live demos (a drawing sheet, a neon frame, chapter moments, and live readouts) and picked **drawing sheet + chapter moments**, on one condition: the big effect mustn't repeat at every chapter, or it gets annoying.
+
+**Drawing sheet** (tablet and up, `SheetFrame.tsx`). The screen is framed like the technical drawing the logo is drawn on:
+- A 1rem margin (`--sheet` in `tokens.css`) with a thin border, red registration marks on the corners, and grid letters A–H in the top margin. Content scrolls under solid strips in the top and bottom margins.
+- Rulers in the side margins. They're part of the page, so the browser scrolls them in exact step with the content. Each chapter puts a red mark with its number on the left ruler where it begins, and a small red pointer marks the middle of the screen, the line that decides the active chapter.
+- A title block in the bottom-right corner: sheet number (03 / 05), chapter, the logo part in focus (DT, Core, D, T) and "Drawn Dave Tristian". Its values roll over like a counter when the chapter changes.
+- The right border fills with red as you scroll down the page, with a glowing tip.
+- On load, the border draws itself in from two opposite corners (about 1 s). The rulers, letters and title block fade in after it.
+
+**Chapter moments:**
+- A giant outlined chapter number sits behind the logo. At every chapter change, a thin scan line redraws it from the top (0.9 s). This is the quiet version that repeats.
+- The first time the visitor scrolls out of the intro, a scan line sweeps down the whole screen (1.8 s), and everything it passes turns red, then cools back down. It plays once per visit, never on load or after a deep link (`shouldSweep` in `src/lib/sheet.ts`).
+
+**Phones:** the lighter version Dave agreed to. There's no border or rulers: just a thin progress line down the right edge, the chapter number behind the logo, and the one-time sweep.
+
+**Reduced motion:** the sheet, rulers and progress line stay, since they follow the scroll directly. Nothing draws in, the title block and number swap instantly, and the sweep never plays.
+
+Lighthouse after the change (Oct 2026): accessibility, best practices and SEO still 100; performance 94 on desktop and 70–74 on mobile, within run-to-run noise of before.
+
 ## 7. Navigation and accessibility
 
 - The chapter list is a `<nav>` of anchor links (`#intro`, `#about`, `#projects`, `#experience`, `#contact`). The active chapter gets `aria-current`. Clicking scrolls smoothly, or instantly with reduced motion.
@@ -226,7 +248,8 @@ src/
   content/       profile.ts, projects.ts, experience.ts, types.ts   ← edit these to update the site
   sections/      Intro.tsx, About.tsx, Projects.tsx, Experience.tsx, Contact.tsx
   components/    TopBar, ChapterRail, ChapterSheet (phone), ProjectCard, SpecSheet,
-                 TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image)
+                 TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image),
+                 SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText
   three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
                  shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states)
   motion/        choreography.ts (pose keyframes + interpolation, pure functions),
@@ -253,6 +276,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
   - choreography: the pose at each keyframe, interpolation, clamping outside 0–1
   - experience filter rule, including the Student Union entry showing under KEPANITIAAN
   - content sanity: every project has a "my part" line and valid link URLs
+  - drawing sheet: scroll progress, the title block's part names, and when the one-time sweep may play
 - `npm run build` must pass.
 - **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
 - **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.

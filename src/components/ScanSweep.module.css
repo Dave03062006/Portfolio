@@ -1,0 +1,38 @@
+/* Two layers that move together. They stay `hidden` until ScanSweep.tsx plays them. */
+.wash,
+.light {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45vh;
+  pointer-events: none;
+  transform: translateY(-100%);
+}
+
+/* Turns whatever it covers red ("multiply" keeps black black). It's strongest at the line
+   and fades out above it, so everything the line has passed cools back down. */
+.wash {
+  background: linear-gradient(transparent, rgb(255 45 61 / 0.92));
+  mix-blend-mode: multiply;
+}
+
+/* The line itself, plus a little red light on the black just behind it */
+.light {
+  background: linear-gradient(transparent 55%, rgb(255 45 61 / 0.12));
+  mix-blend-mode: screen;
+}
+
+.light::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--red-hot);
+  box-shadow:
+    0 0 0.6rem var(--red),
+    0 0 2.5rem rgb(255 45 61 / 0.7);
+}
