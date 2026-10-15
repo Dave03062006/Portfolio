@@ -2,7 +2,7 @@
 
 ![The DT logo next to the name Dave Tristian Nurcahyo](public/og.jpg)
 
-My one-page portfolio. The DT logo is a live 3D object: it opens the site big and centered, with my name around it. As you scroll, it flies to its place, turns, comes apart into an exploded view, and brings one piece forward for each chapter. **D** for Developer leads into my projects, **T** for Team into my organizations and kepanitiaan, and the glowing **core** ("always learning") into the about section. At the end it comes back together.
+My one-page portfolio. The DT logo is a live 3D object: it opens the site big and centered, turning to face your cursor, with my name around it flickering on like a neon sign (there's a light switch to turn the flicker off). As you scroll, it flies to its place, turns, comes apart into an exploded view, and brings one piece forward for each chapter. **D** for Developer leads into my projects, **T** for Team into my organizations and kepanitiaan, and the glowing **core** ("always learning") into the about section. At the end it comes back together.
 
 Built with React, TypeScript, Vite and React Three Fiber.
 
@@ -14,7 +14,7 @@ Built with React, TypeScript, Vite and React Three Fiber.
 - **Works for everyone.** There's a reduced-motion mode (still poses with crossfades), a flat SVG logo for browsers without 3D, full keyboard navigation, and a 100 accessibility score in Lighthouse.
 - **Easy to update.** All text lives in three content files, so editing doesn't touch layout code.
 - **Light on devices.** The 3D code loads after the page, compiles its shaders in the background where the browser supports it, and only draws when something changes.
-- **Tested.** 117 unit tests cover the content, the scroll choreography, the logo geometry and the components.
+- **Tested.** 124 unit tests cover the content, the scroll choreography, the logo geometry and the components.
 
 ## Run it
 

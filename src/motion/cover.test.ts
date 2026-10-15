@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import { EXPLODED_STOP, restingTime } from './choreography'
-import { coverAmount, coverNameOpacity, heroReveal } from './cover'
+import { coverAmount, coverNameOpacity, heroReveal, initialFlicker } from './cover'
+
+describe('initialFlicker', () => {
+  it('flickers for a first-time visitor', () => {
+    expect(initialFlicker(null, false)).toBe(true)
+  })
+
+  it('stays steady when their device asks for reduced motion', () => {
+    expect(initialFlicker(null, true)).toBe(false)
+  })
+
+  it('keeps the position the visitor flipped the switch to', () => {
+    expect(initialFlicker('off', false)).toBe(false)
+    expect(initialFlicker('on', true)).toBe(true)
+  })
+})
 
 describe('the cover', () => {
   it('starts with the logo big on the cover, the name showing and the hero hidden', () => {

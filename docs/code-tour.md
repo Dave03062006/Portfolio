@@ -378,7 +378,11 @@ Both draw the same shapes, from one file: [`src/brand/logoPaths.ts`](../src/bran
 - The lighting is plain lamps ([`Studio.tsx`](../src/three/Studio.tsx)). Fancier lighting looked similar but froze phones for seconds while it prepared.
 - The neon glow is a "bloom" filter ([`Glow.tsx`](../src/three/Glow.tsx)) that only affects the brightest red parts.
 
-**The cover.** The first screen shows the logo big in the middle with your name around it ([`Cover.tsx`](../src/sections/Cover.tsx)). There's still only one logo: the cover just has an empty box, the "slot", where the logo should sit. The Stage measures where that slot is and writes the answer onto itself as CSS variables (`--fly-x`, `--fly-y`, `--fly-scale`). Then `--cover`, which runs from 1 to 0 as you scroll ([`cover.ts`](../src/motion/cover.ts)), slides the logo between the slot and its usual place, all in CSS (see `.frame` in `Stage.module.css`). Measuring two boxes and animating between them is a well-known trick, sometimes called FLIP.
+**The cover.** The first screen shows the logo big in the middle with your name around it ([`Cover.tsx`](../src/sections/Cover.tsx)). There's still only one logo: the cover just has an empty box, the "slot", where the logo should sit. The Stage measures where that slot is and writes the answer onto itself as CSS variables (`--fly-x`, `--fly-y`, `--fly-scale`). Then `--cover`, which runs from 1 to 0 as you scroll ([`cover.ts`](../src/motion/cover.ts)), slides the logo between the slot and its usual place, all in CSS (see `.frame` in `Stage.module.css`). Measuring two boxes and animating between them is a well-known trick, sometimes called FLIP. On the cover, `LogoModel.tsx` also turns the logo to face the mouse and makes it hover (look for `COVER_TILT` and `hover`).
+
+**The name as a neon sign.** Each line of the cover's name is drawn twice: dark "unlit glass" underneath, and the glowing version exactly on top ([`Cover.tsx`](../src/sections/Cover.tsx)). The flicker is plain CSS (`@keyframes neon-on`, `neon-stutter` and `neon-buzz` in `Cover.module.css`) that only changes the glowing copy's opacity, which browsers can animate very cheaply. The timings are written down carefully because flashing light can trigger seizures: never more than 3 flashes in any second. [`LightSwitch.tsx`](../src/components/LightSwitch.tsx) turns it off: a real `<button role="switch">`, drawn with CSS to look like a wall switch, and its position is remembered with [`preferences.ts`](../src/lib/preferences.ts).
+
+**The neon seam.** The light between the D and the T is a thin tube ([`createSeamTubePath`](../src/three/shapes.ts)) drawn about nine times brighter than white. Screens can't show brighter than white, so its middle turns white-hot, and the bloom filter spreads the extra brightness around it as a red glow. That's what makes it read as light instead of red plastic.
 
 **The labels** ([`TeardownLabels.tsx`](../src/three/TeardownLabels.tsx)) are plain HTML. When the 3D logo is showing, it works out where each part is on screen every frame and writes that into [`labelLayout.ts`](../src/three/labelLayout.ts), so the leader lines stay attached as the logo turns.
 
@@ -422,7 +426,7 @@ A new key means a brand-new element, and a brand-new element plays its CSS anima
 
 ## 15. Tests
 
-Run `npm test`. 117 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
+Run `npm test`. 124 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
 
 ```ts
 it('shows only teaching under TEACHING', () => {
@@ -486,6 +490,9 @@ In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, t
 
 ### Choose how scrolling starts
 Visitors pick Guided or Free with the switch, and their choice is remembered. To change what first-time visitors get, edit the last line of `initialScrollMode` in `src/motion/scrollMode.ts`. To drop guided scrolling altogether, delete the `useSectionPaging(...)` line in `ScrollModeProvider.tsx` and the two `<ScrollModeToggle />`s (in `TopBar.tsx` and `ChapterSheet.tsx`).
+
+### Change the cover's flicker
+To start everyone with a steady name, change the last line of `initialFlicker` in `src/motion/cover.ts` to `return false` (the switch still lets visitors turn it on). The faulty letters are `FIRST_FAULTY` and `LAST_FAULTY` in `Cover.tsx`. If you change the timings in `Cover.module.css`, keep to no more than 3 flashes in any second.
 
 ### Remove the cover
 In `src/motion/cover.ts`, make `coverAmount` return `0` and `heroReveal` return `1`, then delete `<Cover />` from `App.tsx`. The site starts on the hero again.

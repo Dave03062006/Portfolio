@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createDShape, createTShape, createWindowShape, toWorld } from './shapes'
+import { createDShape, createSeamTubePath, createTShape, createWindowShape, toWorld } from './shapes'
 
 const bounds = (points: { x: number; y: number }[]) => ({
   minX: Math.min(...points.map((p) => p.x)),
@@ -52,5 +52,24 @@ describe('logo shapes', () => {
     const t = bounds(createTShape().getPoints())
     expect(t.maxY).toBeCloseTo(d.maxY)
     expect(t.minY).toBeCloseTo(d.minY)
+  })
+})
+
+describe('the seam neon tube', () => {
+  const points = createSeamTubePath(0).getSpacedPoints(80)
+
+  it('stays below the top edge of the logo, so nothing pokes out', () => {
+    const top = toWorld([0, 44]).y
+    expect(Math.max(...points.map((p) => p.y))).toBeLessThan(top)
+  })
+
+  it('stays in the middle of the 4-unit gap, bend included', () => {
+    // Distance from the gap's centre line, in grid units: the diagonal x - y = 50.83, then x = 122
+    const offCentre = points.map((p) => {
+      const x = p.x * 100 + 100
+      const y = 100 - p.y * 100
+      return y < 71.17 ? Math.abs(x - y - 50.83) / Math.SQRT2 : Math.abs(x - 122)
+    })
+    expect(Math.max(...offCentre)).toBeLessThan(1.5)
   })
 })

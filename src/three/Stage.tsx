@@ -81,10 +81,10 @@ export function Stage() {
 
   // The 3D logo reads this when it draws, without re-rendering. After every render of the
   // Stage (which happens whenever the pose changes), ask the 3D logo to draw a fresh frame.
-  const stateRef = useRef<StageState>({ pose, labels: reveal.text, reduced })
+  const stateRef = useRef<StageState>({ pose, labels: reveal.text, reduced, cover })
   const frameRequestRef = useRef<(() => void) | null>(null)
   useEffect(() => {
-    stateRef.current = { pose, labels: reveal.text, reduced }
+    stateRef.current = { pose, labels: reveal.text, reduced, cover }
     frameRequestRef.current?.()
   })
 

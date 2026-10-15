@@ -1,0 +1,108 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem;
+  border-radius: 0.6rem;
+}
+
+/* The wall plate */
+.plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 2.6rem;
+  height: 4rem;
+  padding: 0.35rem 0;
+  border: 1px solid #34343b;
+  border-radius: 0.45rem;
+  background: linear-gradient(160deg, #2b2b31, #141417);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 6px 16px rgb(0 0 0 / 0.55);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.switch:hover .plate {
+  border-color: #4a4a52;
+}
+
+/* The two screws holding the plate to the wall, each with its slot */
+.screw {
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 40%, #0b0b0d 40% 60%, transparent 60%),
+    radial-gradient(#5a5a62, #26262b);
+}
+
+/* The rocker. Off: its bottom is pressed in, so it tips down. On: it tips up. */
+.rocker {
+  position: relative;
+  width: 1.3rem;
+  height: 2rem;
+  border-radius: 0.22rem;
+  background: linear-gradient(#3e3e45, #1d1d21);
+  box-shadow:
+    inset 0 0 0 1px #0b0b0d,
+    0 2px 4px rgb(0 0 0 / 0.5);
+  transform: perspective(3rem) rotateX(-16deg);
+  transition:
+    transform 140ms var(--ease-out),
+    background 140ms var(--ease-out);
+}
+
+.switch[aria-checked='true'] .rocker {
+  background: linear-gradient(#1d1d21, #3e3e45);
+  transform: perspective(3rem) rotateX(16deg);
+}
+
+/* The little light on the rocker: dark when off, glowing red when on */
+.rocker::after {
+  content: '';
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: #4a1016;
+  transform: translateX(-50%);
+  transition:
+    background 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out);
+}
+
+.switch[aria-checked='true'] .rocker::after {
+  background: var(--red-hot);
+  box-shadow:
+    0 0 0.35rem var(--red),
+    0 0 0.9rem rgb(255 45 61 / 0.6);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.text b {
+  font-weight: 600;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rocker,
+  .rocker::after {
+    transition: none;
+  }
+}

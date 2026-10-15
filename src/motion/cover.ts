@@ -5,6 +5,19 @@
 /** The id of the empty box on the cover where the logo sits (Cover.tsx). Stage.tsx measures it. */
 export const COVER_SLOT_ID = 'cover-slot'
 
+/** Where the position of the cover's flicker switch is remembered. */
+export const FLICKER_KEY = 'dt-cover-flicker'
+
+/**
+ * Whether the name on the cover flickers like a neon sign: the visitor's earlier choice if
+ * they flipped the switch, otherwise on, unless their device asks for reduced motion.
+ */
+export function initialFlicker(saved: string | null, reducedMotion: boolean): boolean {
+  if (saved === 'on') return true
+  if (saved === 'off') return false
+  return !reducedMotion
+}
+
 /** Eases in and out between two moments of story time: 0 before `start`, 1 after `end`. */
 function between(time: number, start: number, end: number): number {
   const x = Math.min(1, Math.max(0, (time - start) / (end - start)))

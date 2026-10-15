@@ -1,5 +1,5 @@
-import { Path, Shape, Vector2 } from 'three'
-import { D_OUTER, D_WINDOW, T_OUTER, type Point } from '../brand/logoPaths'
+import { CurvePath, LineCurve3, Path, QuadraticBezierCurve3, Shape, Vector2, Vector3 } from 'three'
+import { D_OUTER, D_WINDOW, SEAM, T_OUTER, type Point } from '../brand/logoPaths'
 
 /** 100 logo-grid units make one unit in the 3D world. */
 export const GRID_PER_WORLD = 100
@@ -35,17 +35,24 @@ export function createWindowShape(): Shape {
   return outline(D_WINDOW)
 }
 
+/** The point `distance` along the straight line from `from` towards `to`. */
+const along = (from: Vector3, to: Vector3, distance: number) =>
+  from.clone().add(to.clone().sub(from).setLength(distance))
+
 /**
- * A strip around the seam between the pieces, a little wider than the gap. The light
- * placed here only shows through the gap, so it looks like light leaking out of the seam.
+ * The path of the neon tube inside the seam: along the middle of the gap between the pieces,
+ * bent round the corner like real glass tubing. It starts a little below the logo's top edge,
+ * so the tube's rounded end never pokes out. `z` is how far in front of the pieces' middle it sits.
  */
-export function createSeamGlowShape(): Shape {
-  return outline([
-    [95.5, 39],
-    [126, 69.5],
-    [126, 130],
-    [118, 130],
-    [118, 72.8],
-    [89.5, 44.3],
-  ])
+export function createSeamTubePath(z: number): CurvePath<Vector3> {
+  const [start, corner, end] = SEAM.map((point) => {
+    const { x, y } = toWorld(point)
+    return new Vector3(x, y, z)
+  })
+  const bend = 0.04 // how far from the corner the bend begins, in world units (4 grid units)
+  const path = new CurvePath<Vector3>()
+  path.add(new LineCurve3(along(start, corner, 0.025), along(corner, start, bend)))
+  path.add(new QuadraticBezierCurve3(along(corner, start, bend), corner, along(corner, end, bend)))
+  path.add(new LineCurve3(along(corner, end, bend), end))
+  return path
 }

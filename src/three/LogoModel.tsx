@@ -15,6 +15,7 @@ import {
   MeshStandardMaterial,
   ShapeGeometry,
   SRGBColorSpace,
+  TubeGeometry,
   Vector3,
   type Group,
   type PointLight,
@@ -29,7 +30,7 @@ import { fallbackLayout } from './fallbackLayout'
 import { ignitionLevel } from './ignition'
 import { LABEL_LAYOUT, liveAnchors } from './labelLayout'
 import { ndcToDrawing } from './projection'
-import { DEPTH, createDShape, createSeamGlowShape, createTShape, createWindowShape } from './shapes'
+import { DEPTH, createDShape, createSeamTubePath, createTShape, createWindowShape } from './shapes'
 
 /** What the Stage tells the 3D logo. It's updated on every render and read on every frame. */
 export type StageState = {
@@ -37,7 +38,16 @@ export type StageState = {
   /** 0 to 1: how visible the exploded-view labels are. The mouse tilt eases off while they show. */
   labels: number
   reduced: boolean
+  /** 1 while the logo is on the cover: there it hovers and turns to face the mouse. */
+  cover: number
 }
+
+/** The neon tube in the seam: how thick it is, and how far in front of the pieces' middle it sits. */
+const SEAM_TUBE_RADIUS = 0.009
+const SEAM_TUBE_Z = 0.085 // the front faces are at 0.12: recessed, but visible from the front
+/** How far the logo turns toward the mouse, in degrees: a little as you read, a lot on the cover. */
+const TILT = { x: 3, y: 4 }
+const COVER_TILT = { x: 16, y: 28 }
 
 const BEVEL = 0.012
 const RED = new Color(BRAND.red)
@@ -147,7 +157,9 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
       dOutlineGlow: outlineGlow(),
       tOutlineGlow: outlineGlow(),
       windowGeometry: fitUVs(new ShapeGeometry(createWindowShape())),
-      seamGeometry: new ShapeGeometry(createSeamGlowShape()),
+      // A thin glass tube rather than a flat strip: drawn far brighter than white, so its core
+      // burns white-hot and the glow effect spreads soft red light around it, like real neon.
+      seamGeometry: new TubeGeometry(createSeamTubePath(SEAM_TUBE_Z), 64, SEAM_TUBE_RADIUS, 8, false),
       dMetal: metal(),
       tMetal: metal(),
       windowGlow: glow(new Color(1, 1, 1), createWindowTexture()),
@@ -164,9 +176,12 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
   const t = useRef<Group>(null)
   const chip = useRef<Group>(null)
   const spill = useRef<PointLight>(null)
+  const seamLight = useRef<PointLight>(null)
+  const windowLight = useRef<PointLight>(null)
   const tilt = useRef({ x: 0, y: 0 })
   const pointer = useRef({ x: 0, y: 0 })
   const framesDrawn = useRef(0)
+  const hoverTimer = useRef(0)
 
   // Let the Stage request a frame whenever the pose changes.
   useEffect(() => {
@@ -188,12 +203,14 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
     return () => window.removeEventListener('pointermove', onMove)
   }, [invalidate])
 
-  // When the 3D logo goes away, the labels should go back to the flat layout.
+  // When the 3D logo goes away, the labels should go back to the flat layout,
+  // and a pending hover frame shouldn't fire.
   useEffect(
     () => () => {
       delete liveAnchors.D
       delete liveAnchors.T
       delete liveAnchors.core
+      window.clearTimeout(hoverTimer.current)
     },
     [],
   )
@@ -202,7 +219,7 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
   // React state, so it can run 60 times a second without re-rendering anything.
   useFrame(({ camera }, delta) => {
     if (!logo.current || !d.current || !t.current || !chip.current) return
-    const { pose, labels, reduced } = stateRef.current
+    const { pose, labels, reduced, cover } = stateRef.current
     const layout = fallbackLayout(pose) // the same numbers the flat logo uses, so the two match
 
     // Pieces: the flat layout's sideways moves, plus depth: the focused piece comes forward.
@@ -231,20 +248,32 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
     parts.chipBody.emissiveIntensity = 0.05 + 0.35 * coreGlow
 
     // Neon: the window and seam flicker on at page load, then follow the pose's glow.
-    const neon = reduced ? 1 : ignitionLevel(performance.now() / 1000)
+    const seconds = performance.now() / 1000
+    const neon = reduced ? 1 : ignitionLevel(seconds)
     parts.windowGlow.color.setScalar(neon * (1.1 + 0.9 * pose.glow))
-    parts.seamGlow.opacity = neon * layout.seamGlow
-    parts.seamGlow.color.copy(RED).multiplyScalar(2.2)
+    // The seam only shows while the pieces are together; when they part, the tube would be bare
+    const seam = neon * layout.seamGlow
+    parts.seamGlow.opacity = seam
+    parts.seamGlow.color.copy(RED).multiplyScalar(9)
     if (spill.current) spill.current.intensity = neon * (0.6 + 1.6 * pose.glow)
+    // Red light from inside the seam and the window, falling on the metal walls around them
+    if (seamLight.current) seamLight.current.intensity = 0.22 * seam
+    if (windowLight.current) windowLight.current.intensity = neon * (0.25 + 0.35 * pose.glow)
 
-    // Turn the whole logo, plus a little tilt toward the mouse (eased off while labels show).
-    const allowTilt = reduced ? 0 : 1 - labels
-    tilt.current.x = MathUtils.damp(tilt.current.x, pointer.current.y * 3 * allowTilt, 4, delta)
-    tilt.current.y = MathUtils.damp(tilt.current.y, pointer.current.x * 4 * allowTilt, 4, delta)
+    // Turn the whole logo, plus a tilt toward the mouse: a little as you read (easing off while
+    // the labels show), and on the cover a lot, so the logo turns to face it. On the cover it
+    // also hovers, bobbing gently.
+    const follow = reduced ? 0 : 1 - labels
+    const tiltX = pointer.current.y * MathUtils.lerp(TILT.x, COVER_TILT.x, cover) * follow
+    const tiltY = pointer.current.x * MathUtils.lerp(TILT.y, COVER_TILT.y, cover) * follow
+    tilt.current.x = MathUtils.damp(tilt.current.x, tiltX, 3.5, delta)
+    tilt.current.y = MathUtils.damp(tilt.current.y, tiltY, 3.5, delta)
+    const hover = reduced ? 0 : cover
+    logo.current.position.y = Math.sin(seconds * 1.6) * 0.03 * hover
     logo.current.rotation.set(
       MathUtils.degToRad(pose.rotX + tilt.current.x),
       MathUtils.degToRad(pose.rotY + tilt.current.y),
-      0,
+      MathUtils.degToRad(Math.sin(seconds * 1.1) * 1.2 * hover),
     )
 
     // Tell the labels where their parts are on screen, so their lines stay attached.
@@ -262,22 +291,25 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
     framesDrawn.current += 1
     if (framesDrawn.current === 3) onReady()
 
-    // Keep drawing while something is still moving on its own: the first few frames,
-    // the startup flicker, or the tilt easing toward the mouse.
-    const tiltSettling =
-      Math.abs(tilt.current.x - pointer.current.y * 3 * allowTilt) > 0.01 ||
-      Math.abs(tilt.current.y - pointer.current.x * 4 * allowTilt) > 0.01
+    // Keep drawing while something is still moving on its own: the first few frames, the
+    // startup flicker, or the tilt easing toward the mouse. The hover on the cover is slow,
+    // so it looks just as smooth at 30 frames a second, which halves the work for the device.
+    const tiltSettling = Math.abs(tilt.current.x - tiltX) > 0.01 || Math.abs(tilt.current.y - tiltY) > 0.01
+    window.clearTimeout(hoverTimer.current)
     if (framesDrawn.current < 3 || neon < 1 || tiltSettling) invalidate()
+    else if (hover > 0) hoverTimer.current = window.setTimeout(invalidate, 33)
   })
 
   return (
     <group ref={logo}>
       <pointLight ref={spill} color={RED} position={[0.12, 0, 0.9]} distance={3} decay={1.5} />
 
-      {/* The D, with its window glowing from inside */}
+      {/* The D, with its window glowing from inside, and a little red lamp in the window that
+          lights its inner walls, like a lightbox */}
       <group ref={d}>
         <mesh geometry={parts.dGeometry} material={parts.dMetal} />
         <mesh geometry={parts.windowGeometry} material={parts.windowGlow} position-z={-DEPTH / 2 + 0.006} />
+        <pointLight ref={windowLight} color={RED} position={[-0.28, 0, -0.02]} distance={0.55} decay={2} />
         <lineSegments geometry={parts.dOutline} material={parts.dOutlineGlow} />
       </group>
 
@@ -287,8 +319,10 @@ export function LogoModel({ stateRef, frameRequestRef, onReady }: LogoModelProps
         <lineSegments geometry={parts.tOutline} material={parts.tOutlineGlow} />
       </group>
 
-      {/* Light in the seam: it sits between the pieces, so it only shows through the gap */}
-      <mesh geometry={parts.seamGeometry} material={parts.seamGlow} position-z={0} />
+      {/* The neon tube in the seam, recessed in the gap between the pieces, with a small red lamp
+          just in front of the gap that washes the metal around it, like light escaping the crack */}
+      <mesh geometry={parts.seamGeometry} material={parts.seamGlow} />
+      <pointLight ref={seamLight} color={RED} position={[0.21, 0.12, 0.2]} distance={0.6} decay={2} />
 
       {/* The core chip */}
       <group ref={chip}>

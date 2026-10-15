@@ -169,14 +169,14 @@ Each card shows its course as a small caption. Every project here was a course's
 
 ## 5. The 3D logo
 
-- **Geometry:** the logo paths become `THREE.Shape`s, then `ExtrudeGeometry` with a depth of about 24 units on the 200 grid and a small bevel for machined edges. The D window is a red emissive plane set behind the hole. The seam is a thin emissive strip that follows the seam path. The core is a chip-shaped box with a grid of glowing squares on its face.
+- **Geometry:** the logo paths become `THREE.Shape`s, then `ExtrudeGeometry` with a depth of about 24 units on the 200 grid and a small bevel for machined edges. The D window is a red emissive plane set behind the hole, with a small red lamp in front of it that lights the window's inner walls like a lightbox. The seam is a neon tube: a thin glass tube along the gap's centre line, bent round the corner, recessed in the gap and drawn far brighter than white, so its core burns white-hot and the bloom spreads red light around it; a small red lamp just in front of the gap washes the metal around it. *(It replaced a flat red strip that looked like plastic and poked out above the logo.)* The core is a chip-shaped box with a grid of glowing squares on its face.
 - **Materials:** the metal is near-black (`#2a2a30`) with high metalness (about 0.9) and medium roughness (about 0.35). The glowing parts use `#ff2d3d`, emissive and not tone-mapped, so that bloom catches them.
 - **Lighting:** a procedural studio environment (drei `Environment` with `Lightformer`s), so there's no HDR file to download, plus a red rim light from behind.
 - **Post-processing:** bloom (`@react-three/postprocessing`) with a luminance threshold, so only the emissive red parts glow.
 - **Pose model:** at any moment the logo's state is
   `{ rotX, rotY, explode: 0–1, focus: 'none' | 'core' | 'D' | 'T', focusAmount: 0–1, glow: 0–1 }`.
   Poses are keyframes in `src/motion/choreography.ts`, and scroll progress interpolates between them.
-- **Mouse tilt:** on desktop with a mouse, the logo tilts up to about 4° toward the cursor, smoothed. It's off for touch screens and reduced motion.
+- **Mouse tilt:** on desktop with a mouse, the logo tilts up to about 4° toward the cursor, smoothed; on the cover it turns much further to face the cursor (section 6.6). It's off for touch screens and reduced motion.
 - **Performance:** the canvas draws only when something changes (scrolling, the mouse, the startup flicker), so an idle or hidden tab costs nothing. Device pixel ratio is capped to [1, 1.75]. The 3D code is loaded lazily, in its own chunk after first paint, and the flat SVG logo shows until it's ready.
 
 ## 6. Motion
@@ -185,7 +185,7 @@ Each card shows its course as a small caption. Every project here was a course's
 
 | Moment | What happens |
 |---|---|
-| Page load | The cover: the intact logo big in the middle, the name around it. The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. The drawing sheet's border draws itself in (section 6.4). |
+| Page load | The cover: the intact logo big in the middle, facing the cursor and hovering, the name around it. The seam flickers on once, like a neon tube starting (about 700 ms); then the name flickers on like a neon sign in a dark room, line by line, and stutters every few seconds after (section 6.6). The drawing sheet's border draws itself in (section 6.4). |
 | Cover → hero | The name clears, the logo flies to its place while turning and coming apart, the chapter number is scanned in behind it, and the hero text and chapter list fade in (section 6.6). |
 | Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
 | Every chapter change | A red scan line sweeps the whole screen in the direction of travel, the big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
@@ -256,6 +256,10 @@ Dave asked for the intact logo to get its own first screen, before the hero.
 - **Sharpness:** on the cover the logo is shown up to about 1.5 times its usual size, so the 3D canvas renders at least 1.5 pixels per CSS pixel (`dpr={[1.5, 1.75]}`), and measures its size before CSS scaling (`resize={{ offsetSize: true }}`).
 - **Sizes:** laptop: logo box `min(54vw, 80vh)`, name `min(9vw, 15vh)`; portrait tablets get more; phones wrap the first name onto two lines.
 - Lighthouse after the change: accessibility, best practices and SEO 100; performance unchanged against the previous build measured side by side; CLS 0.026 on desktop (the cover's big text when its font loads), still well within "good".
+- **Facing the cursor (added later the same day):** on the cover, the logo turns to face the mouse, up to 28° sideways and 16° up or down (as you read the rest of the site it's back to a 3–4° tilt), and hovers with a slow bob and sway. Phones and tablets get the hover only. Off with reduced motion. The hover draws at 30 frames a second, which looks the same for something this slow and halves the work; desktop Lighthouse performance measured about 2 points lower than without it (software-rendered 3D in the test exaggerates the cost).
+- **The name as a neon sign:** each line is drawn twice, as dark unlit glass and, exactly on top, lit (white neon for the first name, a red neon outline for the surname, with a soft glow on the "room" around it). Flickering only changes the lit copy's opacity. In order: the logo ignites, then the first name flickers on (about 1.2 s in), then the surname. After that, each line stutters every 8 seconds, the two 4 seconds apart, and one "faulty" letter per line (the second I of TRISTIAN, the H of NURCAHYO) buzzes on its own.
+- **Flash safety (WCAG 2.3.1):** measured in a browser, the most in any one second is 2 flashes, counting both lines together; the limit is 3. The lines never flash at the same time as each other or as the logo's ignition.
+- **The light switch:** a wall-switch-style toggle (plate, two screws, a rocker that tips up for on and down for off, a red light when on) in the cover's bottom-left corner, labelled FLICKER. It turns the flicker off, leaving the name steadily lit. A real `role="switch"` button, outside the cover's `aria-hidden` decoration. Remembered in `localStorage` (`dt-cover-flicker`); it starts off when the device asks for reduced motion.
 
 ### 6.7 The scroll switch (added 2026-10-15)
 
@@ -271,6 +275,7 @@ Visitors choose between **Guided** (chapter to chapter, section 6.5) and **Free*
 - The chapter list is a `<nav>` of anchor links (`#intro`, `#about`, `#projects`, `#experience`, `#contact`). The active chapter gets `aria-current`. Clicking scrolls smoothly, or instantly with reduced motion.
 - A "Skip to content" link is the first thing focusable.
 - Everything interactive works with the keyboard and shows a visible focus ring (2 px red outline with offset).
+- Nothing flashes more than 3 times a second, and the cover's flicker has its own off switch (section 6.6).
 - The 3D canvas is decorative (`aria-hidden`). Everything it shows is also in HTML text, and the labels are HTML, not drawn in WebGL.
 - The timeline filters are toggle buttons (`aria-pressed`).
 - The COPY button uses the Clipboard API, with a fallback that selects the text. It announces "Copied" through an `aria-live` region.
@@ -286,7 +291,9 @@ src/
   sections/      Cover.tsx, Intro.tsx, About.tsx, Projects.tsx, Experience.tsx, Contact.tsx
   components/    TopBar, ChapterRail, ChapterSheet (phone), ProjectCard, SpecSheet,
                  TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image),
-                 SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText, ScrollModeToggle
+                 SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText, ScrollModeToggle,
+                 LightSwitch
+  lib/           experienceFilter.ts, sheet.ts, preferences.ts (remembered settings)
   three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
                  shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states),
                  ChapterNumber.tsx
@@ -319,6 +326,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
   - drawing sheet: scroll progress, the title block's part names, and when and which way the sweep plays
   - chapter-to-chapter scrolling: the stops, where each gesture goes, settling after a swipe, the spring
   - the cover's timing (the name clears before the hero appears), and the scroll switch (default, remembered choice)
+  - the flicker's default, the light switch (a real switch, flips on click), and the seam tube (stays inside the gap and below the top edge)
 - `npm run build` must pass.
 - **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
 - **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.

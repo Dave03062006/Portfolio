@@ -14,8 +14,8 @@
   --logo-h: calc(var(--logo-w) * 220 / 260);
 }
 
-.first,
-.last {
+.line {
+  position: relative;
   font-weight: 800;
   font-stretch: 125%;
   font-size: clamp(2rem, 12vw, 4.75rem); /* phones: "NURCAHYO", the widest word, fits with room to spare */
@@ -26,14 +26,51 @@
   text-wrap: balance;
 }
 
-.first {
-  color: var(--text);
+/* ---- The name as a neon sign ----
+   Each line is drawn twice: the dark glass tubes (unlit), and the same letters glowing (lit)
+   exactly on top. Flickering only changes the lit copy's opacity, which is cheap to animate. */
+
+.unlit {
+  display: block;
 }
 
-/* The surname as a red outline, like the big chapter numbers */
-.last {
+.lit {
+  position: absolute;
+  inset: 0;
+}
+
+/* First name: white neon */
+.first .unlit {
+  color: #1c1c20;
+}
+
+.first .lit {
+  color: #fff;
+  text-shadow:
+    0 0 0.03em #fff,
+    0 0 0.12em rgb(255 255 255 / 0.5),
+    0 0 0.45em rgb(255 70 85 / 0.35);
+}
+
+/* When the first name lights up, so does the dark room around it */
+.first .lit::before {
+  content: '';
+  position: absolute;
+  inset: -90% -15%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(255 240 242 / 0.07), rgb(255 45 61 / 0.04) 55%, transparent);
+}
+
+/* Surname: a red neon outline, like the big chapter numbers */
+.last .unlit {
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--red);
+  -webkit-text-stroke: 1.5px #3a0c12;
+}
+
+.last .lit {
+  color: transparent;
+  -webkit-text-stroke: 1.5px #ff3a4a;
+  filter: drop-shadow(0 0 0.05em rgb(255 45 61 / 0.9)) drop-shadow(0 0 0.25em rgb(255 45 61 / 0.45));
 }
 
 /* Where the logo sits (the Stage measures this box). Its pieces fill the middle of the box,
@@ -66,18 +103,30 @@
   color: var(--text-3);
 }
 
+/* The flicker switch, bottom left */
+.switchDock {
+  position: fixed;
+  z-index: 12;
+  left: var(--space-4);
+  bottom: var(--space-5);
+}
+
 @media (min-width: 768px) {
   .cover {
     --logo-w: min(54vw, 80vh);
   }
 
-  .first,
-  .last {
+  .line {
     font-size: min(9vw, 15vh);
   }
 
   .cue {
     bottom: calc(var(--sheet) + var(--space-6));
+  }
+
+  .switchDock {
+    left: var(--gutter);
+    bottom: calc(var(--sheet) + var(--space-5));
   }
 }
 
@@ -87,17 +136,147 @@
     --logo-w: min(76vw, 56vh);
   }
 
-  .first,
-  .last {
+  .line {
     font-size: min(9vw, 11vh);
+  }
+}
+
+/* ---- The flicker (only while the switch is on) ----
+   Like neon tubes switching on in a dark room: the logo first (its own ignition), then the
+   first name, then the surname, each with a few stuttering flashes before it holds steady.
+   After that, every 8 seconds one line stutters again, the two lines 4 seconds apart, and one
+   faulty letter in each line buzzes now and then.
+
+   Safe for people with photosensitive epilepsy: the big flashing areas never flash more than
+   3 times in any second (WCAG 2.3.1), and they take turns rather than flashing together.
+   The light switch turns all of it off, and it starts off when a device asks for less motion. */
+
+.flickering .first .lit {
+  animation:
+    neon-on 1.5s linear 1.2s both,
+    neon-stutter 8s linear 2.7s infinite;
+}
+
+.flickering .last .lit {
+  animation:
+    neon-on 1.5s linear 2.4s both,
+    neon-stutter-long 8s linear 6.7s infinite;
+}
+
+.flickering .lit .faulty {
+  animation: neon-buzz 5.3s linear 3.5s infinite;
+}
+
+.flickering .last .lit .faulty {
+  animation-duration: 6.7s;
+  animation-delay: 4.6s;
+}
+
+/* Switching on: dark, a flash, dark, a flash, a dim moment, then on for good */
+@keyframes neon-on {
+  0%,
+  10% {
+    opacity: 0;
+  }
+  10.5%,
+  14.5% {
+    opacity: 0.9;
+  }
+  15%,
+  25% {
+    opacity: 0.05;
+  }
+  25.5%,
+  30% {
+    opacity: 1;
+  }
+  30.5%,
+  52% {
+    opacity: 0.12;
+  }
+  52.5%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* A short double stutter near the end of each 8 seconds */
+@keyframes neon-stutter {
+  0%,
+  84% {
+    opacity: 1;
+  }
+  84.4%,
+  85.6% {
+    opacity: 0.1;
+  }
+  86%,
+  88.6% {
+    opacity: 1;
+  }
+  89%,
+  90% {
+    opacity: 0.35;
+  }
+  90.4%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The surname's version: it drops out for longer before catching again */
+@keyframes neon-stutter-long {
+  0%,
+  84% {
+    opacity: 1;
+  }
+  84.4%,
+  88.4% {
+    opacity: 0.06;
+  }
+  88.8%,
+  90% {
+    opacity: 0.8;
+  }
+  90.4%,
+  91.8% {
+    opacity: 0.1;
+  }
+  92.2%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* One faulty letter's buzz */
+@keyframes neon-buzz {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  70.6%,
+  72% {
+    opacity: 0.15;
+  }
+  72.6%,
+  75% {
+    opacity: 1;
+  }
+  75.6%,
+  76.6% {
+    opacity: 0.3;
+  }
+  77.2%,
+  100% {
+    opacity: 1;
   }
 }
 
 /* With reduced motion the cover switches on and off (Cover.tsx); fade it instead of popping */
 @media (prefers-reduced-motion: reduce) {
-  .first,
-  .last,
-  .cue {
+  .line,
+  .cue,
+  .switchDock {
     transition: opacity 200ms var(--ease-out);
   }
 }

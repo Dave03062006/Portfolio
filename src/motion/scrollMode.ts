@@ -1,3 +1,5 @@
+import { readPreference, savePreference } from '../lib/preferences'
+
 /**
  * How scrolling works, chosen by the visitor with the switch in the top bar (or the chapter
  * menu on phones): 'guided' glides from chapter to chapter (useSectionPaging.ts), 'free' is
@@ -17,19 +19,11 @@ export function initialScrollMode(saved: string | null, reducedMotion: boolean):
   return reducedMotion ? 'free' : 'guided'
 }
 
-/** The visitor's saved choice, or null. Some browsers (private windows) don't allow saving. */
+/** The visitor's saved choice, or null. */
 export function readSavedScrollMode(): string | null {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY)
-  } catch {
-    return null
-  }
+  return readPreference(STORAGE_KEY)
 }
 
 export function saveScrollMode(mode: ScrollMode) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, mode)
-  } catch {
-    // Not saved: the switch still works for this visit.
-  }
+  savePreference(STORAGE_KEY, mode)
 }
