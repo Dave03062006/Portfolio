@@ -185,7 +185,7 @@ Each card shows its course as a small caption. Every project here was a course's
 
 | Moment | What happens |
 |---|---|
-| Page load | The cover: the intact logo big in the middle, facing the cursor and hovering, the name around it. The seam flickers on once, like a neon tube starting (about 700 ms); then the name flickers on like a neon sign in a dark room, line by line, and stutters every few seconds after (section 6.6). The drawing sheet's border draws itself in (section 6.4). |
+| Page load | The cover: the intact logo big in the middle, facing the cursor and hovering, the name around it. The seam flickers on once, like a neon tube starting (about 700 ms); then the name switches on like a neon sign in a dark room, letter by letter in a random order, and random letters keep flickering after (section 6.6). The drawing sheet's border draws itself in (section 6.4). |
 | Cover → hero | The name clears, the logo flies to its place while turning and coming apart, the chapter number is scanned in behind it, and the hero text and chapter list fade in (section 6.6). |
 | Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
 | Every chapter change | A red scan line sweeps the whole screen in the direction of travel, the big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
@@ -201,7 +201,7 @@ Every scroll animation follows one number, **story time** (`src/motion/storyTime
 ### 6.2 Rules
 
 - Motion has to mean something: it tells the logo story or answers something the visitor did.
-- Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, and bouncy or overshooting easing.
+- Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, and bouncy or overshooting easing. (One exception: the cover's pull cord springs back and sways after a pull, because it's a physical object; section 6.6.)
 - Scrolling moves chapter to chapter at Dave's request (section 6.5). It stays as close to normal scrolling as it can: chapters taller than the screen scroll normally inside, every input works (wheel, touchpad, touch, keyboard, scrollbar), and it's off with reduced motion.
 - Content never waits for an animation. All text is in the HTML and readable right away. The one exception, at Dave's request: the cover holds the hero's text back until the first scroll. It's still in the HTML for screen readers and search engines.
 
@@ -257,9 +257,9 @@ Dave asked for the intact logo to get its own first screen, before the hero.
 - **Sizes:** laptop: logo box `min(54vw, 80vh)`, name `min(9vw, 15vh)`; portrait tablets get more; phones wrap the first name onto two lines.
 - Lighthouse after the change: accessibility, best practices and SEO 100; performance unchanged against the previous build measured side by side; CLS 0.026 on desktop (the cover's big text when its font loads), still well within "good".
 - **Facing the cursor (added later the same day):** on the cover, the logo turns to face the mouse, up to 28° sideways and 16° up or down (as you read the rest of the site it's back to a 3–4° tilt), and hovers with a slow bob and sway. Phones and tablets get the hover only. Off with reduced motion. The hover draws at 30 frames a second, which looks the same for something this slow and halves the work; desktop Lighthouse performance measured about 2 points lower than without it (software-rendered 3D in the test exaggerates the cost).
-- **The name as a neon sign:** each line is drawn twice, as dark unlit glass and, exactly on top, lit (white neon for the first name, a red neon outline for the surname, with a soft glow on the "room" around it). Flickering only changes the lit copy's opacity. In order: the logo ignites, then the first name flickers on (about 1.2 s in), then the surname. After that, each line stutters every 8 seconds, the two 4 seconds apart, and one "faulty" letter per line (the second I of TRISTIAN, the H of NURCAHYO) buzzes on its own.
-- **Flash safety (WCAG 2.3.1):** measured in a browser, the most in any one second is 2 flashes, counting both lines together; the limit is 3. The lines never flash at the same time as each other or as the logo's ignition.
-- **The light switch:** a wall-switch-style toggle (plate, two screws, a rocker that tips up for on and down for off, a red light when on) in the cover's bottom-left corner, labelled FLICKER. It turns the flicker off, leaving the name steadily lit. A real `role="switch"` button, outside the cover's `aria-hidden` decoration. Remembered in `localStorage` (`dt-cover-flicker`); it starts off when the device asks for reduced motion.
+- **The name as a neon sign, letter by letter:** each line is drawn twice, as dark unlit glass and, exactly on top, lit (white neon for the first name, a red neon outline for the surname, with a soft glow on the "room" around the first name that brightens as its letters light). Every letter is its own `<span>`, and only its opacity changes. After the logo ignites, the letters switch on one by one in a random order (the first name, then the surname), some with a stutter. Then random letters keep flickering: a blink, a double blink, a buzz (dimming twice), or a dropout that catches again. Letters take turns from a shuffled "bag", so every letter gets a turn, in a random order, before any goes again. Rules in `src/motion/neonSign.ts`, played by `useNeonSign.ts`. *(Dave first had whole lines stutter with one "faulty" letter each; he asked for every letter, at random.)*
+- **Flash safety (WCAG 2.3.1):** only one letter flickers at a time, and a running count (`FlashBudget`) holds the whole name to at most 3 flashes in any second, counting the logo's own ignition too. Tested by simulating long random runs, and measured in a browser: about one flash a second on average, never more than 2 in any second, never two letters dark at once.
+- **The pull cord (replaced a wall switch the same day):** a ball chain hanging from the top of the screen, as if from the ceiling, just right of the "DT / Portfolio" brand, with a metal pull at the end, a small red light in it when the flicker is on, and the label FLICKER · ON/OFF. Clicking it (or Space/Enter) pulls the cord down; at the bottom of the pull (140 ms) the flicker switches, then the cord springs back and sways (`src/components/PullCord.tsx`). With reduced motion it switches straight away. A real `role="switch"` button, outside the cover's `aria-hidden` decoration. Remembered in `localStorage` (`dt-cover-flicker`); it starts off when the device asks for reduced motion. Off leaves the name steadily lit; on again replays the switching-on.
 
 ### 6.7 The scroll switch (added 2026-10-15)
 
@@ -292,7 +292,7 @@ src/
   components/    TopBar, ChapterRail, ChapterSheet (phone), ProjectCard, SpecSheet,
                  TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image),
                  SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText, ScrollModeToggle,
-                 LightSwitch
+                 PullCord
   lib/           experienceFilter.ts, sheet.ts, preferences.ts (remembered settings)
   three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
                  shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states),
@@ -301,7 +301,8 @@ src/
                  storyTime.ts (scroll → story time), useScrollStory.ts, useStoryTime.ts,
                  ChapterProvider.tsx (active chapter), cover.ts (cover → hero timing),
                  paging.ts + useSectionPaging.ts (guided scrolling), spring.ts,
-                 scrollMode.ts + ScrollModeProvider.tsx (the scroll switch)
+                 scrollMode.ts + ScrollModeProvider.tsx (the scroll switch),
+                 neonSign.ts + useNeonSign.ts (the cover's flickering letters)
   styles/        tokens.css, global.css
   App.tsx
 public/          images/, cv.pdf, favicon.svg
@@ -326,7 +327,8 @@ docs/            superpowers/specs/ (this file), code-tour.md
   - drawing sheet: scroll progress, the title block's part names, and when and which way the sweep plays
   - chapter-to-chapter scrolling: the stops, where each gesture goes, settling after a swipe, the spring
   - the cover's timing (the name clears before the hero appears), and the scroll switch (default, remembered choice)
-  - the flicker's default, the light switch (a real switch, flips on click), and the seam tube (stays inside the gap and below the top edge)
+  - the neon sign: every letter switches on once, in a random order; flickers take turns; never more than 3 flashes in any second over long random runs
+  - the flicker's default, the pull cord (a real switch, switches once pulled), and the seam tube (stays inside the gap and below the top edge)
 - `npm run build` must pass.
 - **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
 - **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.

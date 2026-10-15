@@ -380,7 +380,9 @@ Both draw the same shapes, from one file: [`src/brand/logoPaths.ts`](../src/bran
 
 **The cover.** The first screen shows the logo big in the middle with your name around it ([`Cover.tsx`](../src/sections/Cover.tsx)). There's still only one logo: the cover just has an empty box, the "slot", where the logo should sit. The Stage measures where that slot is and writes the answer onto itself as CSS variables (`--fly-x`, `--fly-y`, `--fly-scale`). Then `--cover`, which runs from 1 to 0 as you scroll ([`cover.ts`](../src/motion/cover.ts)), slides the logo between the slot and its usual place, all in CSS (see `.frame` in `Stage.module.css`). Measuring two boxes and animating between them is a well-known trick, sometimes called FLIP. On the cover, `LogoModel.tsx` also turns the logo to face the mouse and makes it hover (look for `COVER_TILT` and `hover`).
 
-**The name as a neon sign.** Each line of the cover's name is drawn twice: dark "unlit glass" underneath, and the glowing version exactly on top ([`Cover.tsx`](../src/sections/Cover.tsx)). The flicker is plain CSS (`@keyframes neon-on`, `neon-stutter` and `neon-buzz` in `Cover.module.css`) that only changes the glowing copy's opacity, which browsers can animate very cheaply. The timings are written down carefully because flashing light can trigger seizures: never more than 3 flashes in any second. [`LightSwitch.tsx`](../src/components/LightSwitch.tsx) turns it off: a real `<button role="switch">`, drawn with CSS to look like a wall switch, and its position is remembered with [`preferences.ts`](../src/lib/preferences.ts).
+**The name as a neon sign.** Each line of the cover's name is drawn twice: dark "unlit glass" underneath, and the glowing version exactly on top, with every glowing letter in its own `<span>` ([`Cover.tsx`](../src/sections/Cover.tsx)). The rules for the flicker are plain functions in [`neonSign.ts`](../src/motion/neonSign.ts): the order the letters switch on, which letter flickers next (from a shuffled "bag", so each gets a turn), and which kind of flicker. They take a `random` function as an input, so the tests can pass in a predictable one and check that a long random run never breaks the safety rule: one letter at a time, never more than 3 flashes in any second (flashing light can trigger seizures). [`useNeonSign.ts`](../src/motion/useNeonSign.ts) plays those rules on the page with the Web Animations API, changing only each letter's opacity, which is cheap for the browser.
+
+[`PullCord.tsx`](../src/components/PullCord.tsx) turns the flicker off and on: a real `<button role="switch">`, drawn with CSS as a ball chain and a metal pull. A click plays the pull (`element.animate`), and a 140 ms timer flips the switch at the bottom of the pull. The choice is remembered with [`preferences.ts`](../src/lib/preferences.ts).
 
 **The neon seam.** The light between the D and the T is a thin tube ([`createSeamTubePath`](../src/three/shapes.ts)) drawn about nine times brighter than white. Screens can't show brighter than white, so its middle turns white-hot, and the bloom filter spreads the extra brightness around it as a red glow. That's what makes it read as light instead of red plastic.
 
@@ -426,7 +428,7 @@ A new key means a brand-new element, and a brand-new element plays its CSS anima
 
 ## 15. Tests
 
-Run `npm test`. 124 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
+Run `npm test`. 140 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
 
 ```ts
 it('shows only teaching under TEACHING', () => {
@@ -492,7 +494,7 @@ In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, t
 Visitors pick Guided or Free with the switch, and their choice is remembered. To change what first-time visitors get, edit the last line of `initialScrollMode` in `src/motion/scrollMode.ts`. To drop guided scrolling altogether, delete the `useSectionPaging(...)` line in `ScrollModeProvider.tsx` and the two `<ScrollModeToggle />`s (in `TopBar.tsx` and `ChapterSheet.tsx`).
 
 ### Change the cover's flicker
-To start everyone with a steady name, change the last line of `initialFlicker` in `src/motion/cover.ts` to `return false` (the switch still lets visitors turn it on). The faulty letters are `FIRST_FAULTY` and `LAST_FAULTY` in `Cover.tsx`. If you change the timings in `Cover.module.css`, keep to no more than 3 flashes in any second.
+To start everyone with a steady name, change the last line of `initialFlicker` in `src/motion/cover.ts` to `return false` (the pull cord still lets visitors turn it on). To make the flickers more or less frequent, change the waiting time in `nextFlicker` in `src/motion/neonSign.ts` (`250 + random() * 1100` milliseconds). The safety limit is enforced there too, by `FlashBudget`; keep it, and `npm test` will tell you if a change breaks it.
 
 ### Remove the cover
 In `src/motion/cover.ts`, make `coverAmount` return `0` and `heroReveal` return `1`, then delete `<Cover />` from `App.tsx`. The site starts on the hero again.

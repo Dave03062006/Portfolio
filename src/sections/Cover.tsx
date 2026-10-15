@@ -1,40 +1,42 @@
-import { useState, type CSSProperties } from 'react'
-import { LightSwitch } from '../components/LightSwitch'
+import { Fragment, useRef, useState, type CSSProperties } from 'react'
+import { PullCord } from '../components/PullCord'
 import { profile } from '../content/profile'
 import { readPreference, savePreference } from '../lib/preferences'
 import { restingTime } from '../motion/choreography'
 import { COVER_SLOT_ID, FLICKER_KEY, coverAmount, coverNameOpacity, initialFlicker } from '../motion/cover'
+import { useNeonSign } from '../motion/useNeonSign'
 import { useReducedMotion } from '../motion/useReducedMotion'
 import { useStoryTime } from '../motion/useStoryTime'
 import styles from './Cover.module.css'
 
-// In each line, one letter is a faulty tube that buzzes on its own now and then:
-// the second I of TRISTIAN and the H of NURCAHYO (counted from 0, spaces included).
-const FIRST_FAULTY = 10
-const LAST_FAULTY = 5
-
-/** The text, with one letter wrapped so it can flicker on its own. */
-function Letters({ text, faulty }: { text: string; faulty: number }) {
+/** The text with each letter in its own span, so every letter can flicker on its own. */
+function Letters({ text }: { text: string }) {
   return (
     <>
-      {text.slice(0, faulty)}
-      <span className={styles.faulty}>{text.charAt(faulty)}</span>
-      {text.slice(faulty + 1)}
+      {Array.from(text).map((char, i) =>
+        char === ' ' ? (
+          <Fragment key={i}> </Fragment>
+        ) : (
+          <span key={i} data-letter="">
+            {char}
+          </span>
+        ),
+      )}
     </>
   )
 }
 
-type NeonLineProps = { text: string; faulty: number; className: string; style: CSSProperties }
+type NeonLineProps = { text: string; className: string; style: CSSProperties }
 
 /** A line of the name as a neon sign: the dark glass tubes, with the same letters lit on top. */
-function NeonLine({ text, faulty, className, style }: NeonLineProps) {
+function NeonLine({ text, className, style }: NeonLineProps) {
   return (
-    <p className={`${styles.line} ${className}`} style={style}>
+    <p className={`${styles.line} ${className}`} style={style} data-line="">
       <span className={styles.unlit}>
-        <Letters text={text} faulty={faulty} />
+        <Letters text={text} />
       </span>
-      <span className={styles.lit}>
-        <Letters text={text} faulty={faulty} />
+      <span className={styles.lit} data-lit="">
+        <Letters text={text} />
       </span>
     </p>
   )
@@ -42,12 +44,13 @@ function NeonLine({ text, faulty, className, style }: NeonLineProps) {
 
 /**
  * The first screen, before the hero: the DT logo, big and in the middle, with Dave's name
- * around it as a neon sign that flickers on, like a title in a dark room. The logo itself
+ * around it as a neon sign. Its letters switch on one by one in a random order, like a title
+ * in a dark room, then random letters keep flickering (motion/neonSign.ts). The logo itself
  * belongs to the Stage. While the cover shows, the Stage places it over this page's empty
  * "slot"; the first scroll flies it to its usual place (motion/cover.ts).
  *
  * The name is decoration (it's also the page's main heading, in the hero), so screen readers
- * skip it. The light switch next to it is real: it turns the flicker off.
+ * skip it. The pull cord next to it is real: it turns the flicker off and on.
  */
 export function Cover() {
   const time = useStoryTime()
@@ -58,31 +61,32 @@ export function Cover() {
   // As the name fades, its two lines drift apart, making way for the logo
   const drift = (1 - opacity) * 2.5
 
-  // The flicker, and its switch, for anyone sensitive to flashing light. Remembered for next time.
+  // The flicker, and its pull cord, for anyone sensitive to flashing light. Remembered for next time.
   const [flicker, setFlicker] = useState(() => initialFlicker(readPreference(FLICKER_KEY), reduced))
   const flip = (on: boolean) => {
     setFlicker(on)
     savePreference(FLICKER_KEY, on ? 'on' : 'off')
   }
+  const coverRef = useRef<HTMLDivElement>(null)
+  useNeonSign(coverRef, flicker)
 
   return (
     <>
       <div
-        className={`${styles.cover} ${flicker ? styles.flickering : ''}`}
+        ref={coverRef}
+        className={styles.cover}
         aria-hidden="true"
         // Fully gone once the logo has left (but still laid out, so the slot can be measured)
         style={{ visibility: coverAmount(story) === 0 ? 'hidden' : undefined }}
       >
         <NeonLine
           text={profile.firstName}
-          faulty={FIRST_FAULTY}
           className={styles.first}
           style={{ opacity, transform: `translateY(${-drift}rem)` }}
         />
         <div id={COVER_SLOT_ID} className={styles.slot} />
         <NeonLine
           text={profile.lastName}
-          faulty={LAST_FAULTY}
           className={styles.last}
           style={{ opacity, transform: `translateY(${drift}rem)` }}
         />
@@ -92,8 +96,8 @@ export function Cover() {
       </div>
 
       {/* Outside the decoration above, so keyboards and screen readers can reach it */}
-      <div className={styles.switchDock} style={{ opacity, visibility: opacity === 0 ? 'hidden' : undefined }}>
-        <LightSwitch on={flicker} onChange={flip} label="Flicker" />
+      <div className={styles.cordDock} style={{ opacity, visibility: opacity === 0 ? 'hidden' : undefined }}>
+        <PullCord on={flicker} onChange={flip} label="Flicker" />
       </div>
     </>
   )
