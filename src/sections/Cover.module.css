@@ -1,0 +1,103 @@
+/* Fixed behind the page and the logo: name on top, the logo's slot, surname below */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--topbar-h) var(--space-4) var(--space-7);
+  pointer-events: none;
+  /* The logo's box on the cover, the same shape as the logo drawing (260 × 220) */
+  --logo-w: min(86vw, 24rem);
+  --logo-h: calc(var(--logo-w) * 220 / 260);
+}
+
+.first,
+.last {
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: clamp(2rem, 12vw, 4.75rem); /* phones: "NURCAHYO", the widest word, fits with room to spare */
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.first {
+  color: var(--text);
+}
+
+/* The surname as a red outline, like the big chapter numbers */
+.last {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--red);
+}
+
+/* Where the logo sits (the Stage measures this box). Its pieces fill the middle of the box,
+   from 20% to 71% of its height; the rest is room for the glow. The negative margins tuck
+   the name behind the top of the pieces and the surname behind their bottom. */
+.slot {
+  flex: none;
+  width: var(--logo-w);
+  height: var(--logo-h);
+}
+
+.first {
+  margin-bottom: calc(var(--logo-h) * -0.2 - 0.53em);
+}
+
+.last {
+  margin-top: calc(var(--logo-h) * -0.29 - 0.07em);
+}
+
+.cue {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--space-6);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+@media (min-width: 768px) {
+  .cover {
+    --logo-w: min(54vw, 80vh);
+  }
+
+  .first,
+  .last {
+    font-size: min(9vw, 15vh);
+  }
+
+  .cue {
+    bottom: calc(var(--sheet) + var(--space-6));
+  }
+}
+
+/* Tall screens, like a tablet held upright: there's room for everything to be bigger */
+@media (min-width: 768px) and (orientation: portrait) {
+  .cover {
+    --logo-w: min(76vw, 56vh);
+  }
+
+  .first,
+  .last {
+    font-size: min(9vw, 11vh);
+  }
+}
+
+/* With reduced motion the cover switches on and off (Cover.tsx); fade it instead of popping */
+@media (prefers-reduced-motion: reduce) {
+  .first,
+  .last,
+  .cue {
+    transition: opacity 200ms var(--ease-out);
+  }
+}

@@ -4,6 +4,7 @@ import { CHAPTERS } from '../content/chapters'
 import { useActiveChapter } from '../motion/chapterContext'
 import { AvailabilityPill } from './AvailabilityPill'
 import { ChapterSheet } from './ChapterSheet'
+import { ScrollModeToggle } from './ScrollModeToggle'
 import styles from './TopBar.module.css'
 
 /**
@@ -24,6 +25,8 @@ export function TopBar() {
         <span className="visually-hidden">, back to the top</span>
       </a>
 
+      {/* Laptops only: phones and tablets have it in the chapter menu */}
+      <ScrollModeToggle className={styles.scrollMode} />
       <AvailabilityPill className={styles.pill} />
 
       <button

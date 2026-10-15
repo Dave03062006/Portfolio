@@ -3,6 +3,7 @@ import { CHAPTERS } from '../content/chapters'
 import { useActiveChapter } from '../motion/chapterContext'
 import { AvailabilityPill } from './AvailabilityPill'
 import styles from './ChapterSheet.module.css'
+import { ScrollModeToggle } from './ScrollModeToggle'
 
 type ChapterSheetProps = { open: boolean; onClose: () => void }
 
@@ -60,6 +61,10 @@ export function ChapterSheet({ open, onClose }: ChapterSheetProps) {
             ))}
           </ol>
         </nav>
+        <div className={styles.scrollMode}>
+          <ScrollModeToggle />
+          <p className={styles.hint}>Guided moves a whole chapter with each swipe. Free scrolls normally.</p>
+        </div>
         <AvailabilityPill className={styles.pill} />
       </div>
     </dialog>

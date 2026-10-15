@@ -77,6 +77,23 @@
   margin-top: var(--space-5);
 }
 
+.scrollMode {
+  margin-top: var(--space-5);
+}
+
+/* Bigger buttons for fingers */
+.scrollMode button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+}
+
+.hint {
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .sheet[open] .panel {
     animation: drop-in var(--dur) var(--ease-out);

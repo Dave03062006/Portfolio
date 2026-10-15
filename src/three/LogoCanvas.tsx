@@ -26,9 +26,13 @@ export default function LogoCanvas({ stateRef, frameRequestRef, onReady }: LogoC
     <Canvas
       // 25% bigger than the logo frame on every side (CANVAS_MARGIN), so glows never get cut off
       style={{ position: 'absolute', inset: `${-CANVAS_MARGIN * 100}%`, width: 'auto', height: 'auto' }}
+      // Measure the frame's size before any CSS scaling. On the cover, the Stage scales the
+      // whole frame up, and the drawing surface mustn't grow a second time.
+      resize={{ offsetSize: true }}
       frameloop={frameloop}
-      // Sharp on high-resolution screens, but capped so phones don't overwork.
-      dpr={[1, 1.75]}
+      // At least 1.5 pixels per CSS pixel, so the logo stays sharp when the cover shows it
+      // half as big again; capped at 1.75 so phones don't overwork.
+      dpr={[1.5, 1.75]}
       camera={{ fov: CAMERA_FOV, position: [0, 0, CAMERA_DISTANCE], near: 0.1, far: 50 }}
       gl={{ antialias: true, alpha: true }}
       // Checking shaders for mistakes makes the browser wait on the graphics card; only do it while developing.

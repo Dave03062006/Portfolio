@@ -1,9 +1,20 @@
-import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  lazy,
+  memo,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react'
 import { ErrorBoundary } from '../components/ErrorBoundary'
 import { CHAPTERS } from '../content/chapters'
 import { profile } from '../content/profile'
 import { useActiveChapter } from '../motion/chapterContext'
 import { labelReveal, poseAt, restingTime } from '../motion/choreography'
+import { COVER_SLOT_ID, coverAmount } from '../motion/cover'
 import { useCrossfade } from '../motion/useCrossfade'
 import { useReducedMotion } from '../motion/useReducedMotion'
 import { useStoryTime } from '../motion/useStoryTime'
@@ -39,6 +50,34 @@ export function Stage() {
   const { shown: restTime, visible } = useCrossfade(restingTime(time))
   const pose = poseAt(reduced ? restTime : time)
   const reveal = reduced ? (restTime === 1 ? LABELS_SHOWN : LABELS_HIDDEN) : labelReveal(time)
+  // 1 while the logo is on the cover (big, in the middle of the screen), 0 once it's here
+  const cover = coverAmount(reduced ? restTime : time)
+
+  // Where the cover's slot is, compared with the logo's usual place. Written straight onto the
+  // stage as CSS variables; the CSS moves the logo between the two places as --cover changes.
+  const stageRef = useRef<HTMLDivElement>(null)
+  const frameRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const stage = stageRef.current
+      const frame = frameRef.current
+      const slot = document.getElementById(COVER_SLOT_ID)
+      if (!stage || !frame || !slot) return
+      const stageBox = stage.getBoundingClientRect()
+      const slotBox = slot.getBoundingClientRect()
+      // offsetLeft and friends ignore the frame's own movement, so this is its usual place
+      const frameX = stageBox.left + frame.offsetLeft + frame.offsetWidth / 2
+      const frameY = stageBox.top + frame.offsetTop + frame.offsetHeight / 2
+      stage.style.setProperty('--fly-x', `${slotBox.left + slotBox.width / 2 - frameX}px`)
+      stage.style.setProperty('--fly-y', `${slotBox.top + slotBox.height / 2 - frameY}px`)
+      stage.style.setProperty('--fly-scale', String(slotBox.width / frame.offsetWidth))
+    }
+    measure()
+    // The cover's name can wrap differently once its font has loaded, which moves the slot
+    void document.fonts?.ready.then(measure)
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
 
   // The 3D logo reads this when it draws, without re-rendering. After every render of the
   // Stage (which happens whenever the pose changes), ask the 3D logo to draw a fresh frame.
@@ -84,11 +123,11 @@ export function Stage() {
   const figure = active === 'intro' && reveal.text > 0.5 ? 'Fig. 01 · Exploded view' : chapter.figure
 
   return (
-    <div className={styles.stage} aria-hidden="true">
+    <div ref={stageRef} className={styles.stage} aria-hidden="true" style={{ '--cover': cover } as CSSProperties}>
       <div className={styles.grid} />
-      <div className={styles.frame} style={{ opacity: reduced && !visible ? 0 : 1 }}>
-        {/* First, so it sits behind the logo */}
-        <ChapterNumber number={chapter.number} />
+      <div ref={frameRef} className={styles.frame} style={{ opacity: reduced && !visible ? 0 : 1 }}>
+        {/* First, so it sits behind the logo. Not on the cover: it's scanned in as the logo arrives. */}
+        {cover < 0.5 && <ChapterNumber number={chapter.number} />}
         {!flatRetired && (
           <div className={styles.layer} style={{ opacity: show3D ? 0 : 1 }}>
             <FallbackLogo pose={pose} ignite={!reduced} />

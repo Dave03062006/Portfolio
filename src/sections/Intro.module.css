@@ -19,6 +19,14 @@
   justify-content: flex-end;
   padding: 0 var(--space-5) var(--space-8);
   background: linear-gradient(transparent, var(--bg) 3rem);
+  /* Hidden on the cover, then rises into place as the logo arrives (--rise: 1 → 0, set by Intro.tsx) */
+  transform: translateY(calc(var(--rise, 0) * 1.5rem));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    transition: opacity 200ms var(--ease-out);
+  }
 }
 
 .name {

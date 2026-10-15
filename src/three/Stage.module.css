@@ -23,15 +23,20 @@
   background-size: 3rem 3rem;
   background-position: center;
   mask-image: radial-gradient(closest-side, #000 25%, transparent);
-  opacity: 0.55;
+  opacity: calc(0.55 * (1 - var(--cover, 0))); /* not on the cover */
 }
 
 /* Holds the logo and its labels. The labels are positioned against this box, which has
-   the flat drawing's proportions (260 × 220) whichever logo is showing. */
+   the flat drawing's proportions (260 × 220) whichever logo is showing.
+   On the cover, it moves to the cover's slot and grows to its size: --cover runs from 1 (on
+   the cover) to 0 (here), and --fly-x, --fly-y and --fly-scale say where the slot is
+   (both set by Stage.tsx). */
 .frame {
   position: relative;
   width: min(68vw, 18rem);
   aspect-ratio: 260 / 220;
+  transform: translate(calc(var(--fly-x, 0px) * var(--cover, 0)), calc(var(--fly-y, 0px) * var(--cover, 0)))
+    scale(calc(1 + (var(--fly-scale, 1) - 1) * var(--cover, 0)));
   transition: opacity 200ms var(--ease-out); /* the reduced-motion crossfade */
 }
 
@@ -60,6 +65,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-3);
+  opacity: calc(1 - var(--cover, 0)); /* not on the cover */
 }
 
 /* Tablet and up: the logo moves to the right side and fills the height. */

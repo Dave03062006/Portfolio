@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { CHAPTERS } from '../content/chapters'
 import type { Direction } from './direction'
 import { easeInOut, glideDuration, pageLayout, planScroll, settleTarget, type PageLayout } from './paging'
-import { useReducedMotion } from './useReducedMotion'
 
 /** Wheel events closer together than this belong to one gesture (including a touchpad's coasting). */
 const GESTURE_GAP_MS = 200
@@ -10,20 +9,19 @@ const GESTURE_GAP_MS = 200
 const SCROLL_END_MS = 150
 
 /**
- * Moves the page from chapter to chapter: one scroll gesture glides it to the next resting
- * place (see paging.ts), and it never comes to rest halfway between two chapters. Inside
- * chapters taller than the screen, scrolling works normally. Call it once, in App.
+ * Guided scrolling: moves the page from chapter to chapter. One scroll gesture glides it to
+ * the next resting place (see paging.ts), and it never comes to rest halfway between two
+ * chapters. Inside chapters taller than the screen, scrolling works normally.
+ * ScrollModeProvider turns it on (`enabled`) when the visitor has chosen guided scrolling.
  *
  * - Mouse wheels, touchpads and the keyboard start a glide straight away.
  * - Swipes on a phone and the scrollbar scroll as usual; if the page stops between two
  *   chapters, it glides on in the direction it was going.
- * - With reduced motion turned on, it does nothing: plain scrolling, no glides.
+ * - `instant` (for reduced motion) jumps to the next stop instead of gliding there.
  */
-export function useSectionPaging() {
-  const reduced = useReducedMotion()
-
+export function useSectionPaging(enabled: boolean, instant: boolean) {
   useEffect(() => {
-    if (reduced) return
+    if (!enabled) return
 
     const sections = CHAPTERS.map((chapter) => document.getElementById(chapter.id)).filter(
       (section): section is HTMLElement => section !== null,
@@ -60,6 +58,11 @@ export function useSectionPaging() {
       const from = window.scrollY
       const distance = to - from
       if (Math.abs(distance) < 1) return
+      if (instant) {
+        window.scrollTo({ top: to, behavior: 'instant' })
+        lastY = to
+        return
+      }
       const duration = glideDuration(distance)
       const start = performance.now()
       gliding = true
@@ -161,7 +164,7 @@ export function useSectionPaging() {
         window.removeEventListener(type, onTouch)
       }
     }
-  }, [reduced])
+  }, [enabled, instant])
 }
 
 /** A wheel event's movement in pixels. Some browsers report lines or pages instead. */

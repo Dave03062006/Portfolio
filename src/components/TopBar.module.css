@@ -33,7 +33,8 @@
   color: var(--text-2);
 }
 
-.pill {
+.pill,
+.scrollMode {
   display: none;
 }
 
@@ -89,9 +90,19 @@
   }
 }
 
-/* Laptop: the chapter list on the left takes over, so the menu button goes away */
+/* Laptop: the chapter list on the left takes over, so the menu button goes away,
+   and the scroll switch moves up here from the menu */
 @media (min-width: 1024px) {
   .menuButton {
     display: none;
+  }
+
+  .scrollMode {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .pill {
+    margin-left: 0;
   }
 }

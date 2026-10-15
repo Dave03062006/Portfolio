@@ -50,19 +50,21 @@ createRoot(document.getElementById('root')!).render(
 
 ```
 App
-├── ChapterProvider        works out which chapter is on screen (section 8)
-│   ├── TopBar             the bar at the top
-│   ├── ChapterRail        the numbered list on the left (laptops)
-│   ├── Stage              the logo area (section 13)
-│   ├── SheetFrame         the drawing-sheet border around the screen (section 14)
-│   ├── ScanSweep          the red scan line at each chapter change (section 14)
-│   └── main
-│       ├── SheetRulers    the rulers in the margins
-│       ├── Intro          01
-│       ├── About          02
-│       ├── Projects       03
-│       ├── Experience     04
-│       └── Contact        05
+└── ScrollModeProvider         guided or free scrolling, as the visitor picks (section 8)
+    └── ChapterProvider        works out which chapter is on screen (section 8)
+        ├── TopBar             the bar at the top, with the scroll switch
+        ├── ChapterRail        the numbered list on the left (laptops)
+        ├── Cover              the first screen: the big logo with the name around it (section 13)
+        ├── Stage              the logo area (section 13)
+        ├── SheetFrame         the drawing-sheet border around the screen (section 14)
+        ├── ScanSweep          the red scan line at each chapter change (section 14)
+        └── main
+            ├── SheetRulers    the rulers in the margins
+            ├── Intro          01
+            ├── About          02
+            ├── Projects       03
+            ├── Experience     04
+            └── Contact        05
 ```
 
 **The one idea behind React:** you don't change the page by hand, as in `element.textContent = 'Copied'`. Instead, you describe what the page *should* look like for the current data, and React works out the changes. When the data changes, React redraws the parts that depend on it. That redraw is called a **render**.
@@ -265,6 +267,10 @@ Several components need to know which chapter is on screen: the chapter list, th
 
 When the active chapter changes, every component that reads it re-renders. That's what slides the red marker in the chapter list.
 
+**A second example: the scroll switch.** The Guided / Free switch appears in two places (the top bar on laptops, the chapter menu on phones), and both must show the same choice. [`ScrollModeProvider.tsx`](../src/motion/ScrollModeProvider.tsx) keeps the choice in state, saves it in the browser's `localStorage` so it's remembered next visit, and provides it through [`scrollModeContext.ts`](../src/motion/scrollModeContext.ts). [`ScrollModeToggle.tsx`](../src/components/ScrollModeToggle.tsx) reads it with `useScrollMode()`, so both copies of the switch always agree.
+
+> **Try it.** In [`scrollMode.ts`](../src/motion/scrollMode.ts), change the last line of `initialScrollMode` to `return 'free'`. Open the site in a private window (where nothing is saved yet): it starts in free scrolling.
+
 ---
 
 ## 9. Refs
@@ -343,7 +349,7 @@ Follow it through four files:
 
 A **pose** ([`pose.ts`](../src/motion/pose.ts)) describes the logo at one moment: how far apart the pieces are (`spread`), which part is in focus, how bright the glow is, and the rotation.
 
-**Chapter to chapter.** Scrolling never leaves the page halfway between two chapters, with the logo caught mid-change. [`paging.ts`](../src/motion/paging.ts) works out the resting places ("stops"): the name, the logo taken apart, and the start of each chapter, plus the end of chapters taller than the screen, which scroll normally in between. [`useSectionPaging.ts`](../src/motion/useSectionPaging.ts) listens to the mouse wheel, touchpad and keyboard, and turns one gesture into a glide to the next stop. Swipes on a phone scroll as usual; if the page stops between chapters, it glides on the way it was going. Since the logo follows the scroll position, it plays its part of the story during every glide. The rules live in pure functions, so [`paging.test.ts`](../src/motion/paging.test.ts) can check them without a browser.
+**Chapter to chapter.** Scrolling never leaves the page halfway between two chapters, with the logo caught mid-change. [`paging.ts`](../src/motion/paging.ts) works out the resting places ("stops"): the cover, the hero with the logo taken apart, and the start of each chapter, plus the end of chapters taller than the screen, which scroll normally in between. [`useSectionPaging.ts`](../src/motion/useSectionPaging.ts) listens to the mouse wheel, touchpad and keyboard, and turns one gesture into a glide to the next stop. It only runs while the visitor has picked "Guided" with the scroll switch (section 8). Swipes on a phone scroll as usual; if the page stops between chapters, it glides on the way it was going. Since the logo follows the scroll position, it plays its part of the story during every glide. The rules live in pure functions, so [`paging.test.ts`](../src/motion/paging.test.ts) can check them without a browser.
 
 > **Try it.** In `choreography.ts`, change the second keyframe's `rotY: -28` to `rotY: -60`. Scroll into the intro: the logo now swings much further as it turns. Then try `SPRING = 3` in `useStoryTime.ts` for a lazier, floatier follow, or make glides slower in `glideDuration` in `paging.ts`.
 
@@ -371,6 +377,8 @@ Both draw the same shapes, from one file: [`src/brand/logoPaths.ts`](../src/bran
 - Its graphics programs compile in the background before the first frame (`compileAsync`, in `LogoCanvas.tsx`).
 - The lighting is plain lamps ([`Studio.tsx`](../src/three/Studio.tsx)). Fancier lighting looked similar but froze phones for seconds while it prepared.
 - The neon glow is a "bloom" filter ([`Glow.tsx`](../src/three/Glow.tsx)) that only affects the brightest red parts.
+
+**The cover.** The first screen shows the logo big in the middle with your name around it ([`Cover.tsx`](../src/sections/Cover.tsx)). There's still only one logo: the cover just has an empty box, the "slot", where the logo should sit. The Stage measures where that slot is and writes the answer onto itself as CSS variables (`--fly-x`, `--fly-y`, `--fly-scale`). Then `--cover`, which runs from 1 to 0 as you scroll ([`cover.ts`](../src/motion/cover.ts)), slides the logo between the slot and its usual place, all in CSS (see `.frame` in `Stage.module.css`). Measuring two boxes and animating between them is a well-known trick, sometimes called FLIP.
 
 **The labels** ([`TeardownLabels.tsx`](../src/three/TeardownLabels.tsx)) are plain HTML. When the 3D logo is showing, it works out where each part is on screen every frame and writes that into [`labelLayout.ts`](../src/three/labelLayout.ts), so the leader lines stay attached as the logo turns.
 
@@ -414,7 +422,7 @@ A new key means a brand-new element, and a brand-new element plays its CSS anima
 
 ## 15. Tests
 
-Run `npm test`. 107 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
+Run `npm test`. 117 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
 
 ```ts
 it('shows only teaching under TEACHING', () => {
@@ -476,8 +484,11 @@ In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, t
 ### Change the logo's labels
 `teardown` in `profile.ts`. Keep each label about its own part: D is Developer, T is Team, and the core is Always learning.
 
-### Go back to plain scrolling
-Delete the `useSectionPaging()` line in `App.tsx` (and its import). Scrolling then stops wherever the visitor stops; everything else keeps working.
+### Choose how scrolling starts
+Visitors pick Guided or Free with the switch, and their choice is remembered. To change what first-time visitors get, edit the last line of `initialScrollMode` in `src/motion/scrollMode.ts`. To drop guided scrolling altogether, delete the `useSectionPaging(...)` line in `ScrollModeProvider.tsx` and the two `<ScrollModeToggle />`s (in `TopBar.tsx` and `ChapterSheet.tsx`).
+
+### Remove the cover
+In `src/motion/cover.ts`, make `coverAmount` return `0` and `heroReveal` return `1`, then delete `<Cover />` from `App.tsx`. The site starts on the hero again.
 
 ### Turn the drawing sheet off
 In `App.tsx`, delete `<SheetFrame />`, `<ScanSweep />` and `<SheetRulers />` (and their imports). In `tokens.css`, set `--sheet: 0px` inside the tablet block too: the top bar moves back up and the chapter marks on the ruler disappear. The big number behind the logo is separate: it's `<ChapterNumber />` in `Stage.tsx`.

@@ -2,19 +2,19 @@
 
 ![The DT logo next to the name Dave Tristian Nurcahyo](public/og.jpg)
 
-My one-page portfolio. The DT logo is a live 3D object: as you scroll, it turns, comes apart into an exploded view, and brings one piece forward for each chapter. **D** for Developer leads into my projects, **T** for Team into my organizations and kepanitiaan, and the glowing **core** ("always learning") into the about section. At the end it comes back together.
+My one-page portfolio. The DT logo is a live 3D object: it opens the site big and centered, with my name around it. As you scroll, it flies to its place, turns, comes apart into an exploded view, and brings one piece forward for each chapter. **D** for Developer leads into my projects, **T** for Team into my organizations and kepanitiaan, and the glowing **core** ("always learning") into the about section. At the end it comes back together.
 
 Built with React, TypeScript, Vite and React Three Fiber.
 
 ## Highlights
 
 - **Scroll-driven 3D logo.** Every animation follows a single number, "story time", calculated from the scroll position. Scroll back and it rewinds.
-- **Chapter to chapter.** One scroll glides the page to the next chapter, so it never stops halfway between two. Long chapters scroll normally inside.
+- **Chapter to chapter, or free.** In guided mode, one scroll glides the page to the next chapter, so it never stops halfway between two; long chapters scroll normally inside. A switch in the top bar (or the chapter menu on phones) changes to free scrolling, and the choice is remembered.
 - **A drawing sheet around the screen.** A border with rulers that scroll with the page, a title block that rolls to each chapter, and a red edge that fills as you read. At every chapter change, a red scan line sweeps the screen in the direction you're going, and the chapter number is scanned in behind the logo.
 - **Works for everyone.** There's a reduced-motion mode (still poses with crossfades), a flat SVG logo for browsers without 3D, full keyboard navigation, and a 100 accessibility score in Lighthouse.
 - **Easy to update.** All text lives in three content files, so editing doesn't touch layout code.
 - **Light on devices.** The 3D code loads after the page, compiles its shaders in the background where the browser supports it, and only draws when something changes.
-- **Tested.** 107 unit tests cover the content, the scroll choreography, the logo geometry and the components.
+- **Tested.** 117 unit tests cover the content, the scroll choreography, the logo geometry and the components.
 
 ## Run it
 

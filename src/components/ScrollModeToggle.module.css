@@ -1,0 +1,44 @@
+/* A pill like "Open to internships", holding the label and two small buttons */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  /* undo the browser's default fieldset box */
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0.2rem 0.25rem 0.2rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.label {
+  margin-right: 0.4rem;
+  color: var(--text-3);
+}
+
+.option {
+  min-height: 1.75rem;
+  padding: 0 0.7rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--text-2);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.option:hover {
+  color: var(--text);
+}
+
+/* The chosen one: red, like the picked timeline filter */
+.option[aria-pressed='true'] {
+  background: var(--red);
+  color: var(--bg);
+}

@@ -84,6 +84,7 @@ The site is one page with five chapters. The chapter list reads **01 Intro, 02 A
 
 ### 3.1 Intro
 
+- **Cover (added 2026-10-15):** before the hero, a first screen with only the intact DT logo, big and centered, with the name around it: DAVE TRISTIAN above in white, NURCAHYO below as a red outline, both tucked behind the logo's top and bottom edges. The first scroll flies the logo to its usual place while it turns and comes apart, and the hero fades in (section 6.6).
 - **Name:** DAVE TRISTIAN / NURCAHYO (on two lines)
 - **Meta line:** IMT · FULL STACK DEVELOPMENT · UNIVERSITAS CIPUTRA · CLASS OF 2028
 - **One-liner:** "I build apps for iPhone, Android and the web, and I lead the teams that run campus events."
@@ -184,7 +185,8 @@ Each card shows its course as a small caption. Every project here was a course's
 
 | Moment | What happens |
 |---|---|
-| Page load | The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. The drawing sheet's border draws itself in, and the chapter number is scanned in behind the logo (section 6.4). |
+| Page load | The cover: the intact logo big in the middle, the name around it. The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. The drawing sheet's border draws itself in (section 6.4). |
+| Cover → hero | The name clears, the logo flies to its place while turning and coming apart, the chapter number is scanned in behind it, and the hero text and chapter list fade in (section 6.6). |
 | Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
 | Every chapter change | A red scan line sweeps the whole screen in the direction of travel, the big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
 | About | Focus on the **core**: its glow rises while the D and T dim and move back. |
@@ -201,7 +203,7 @@ Every scroll animation follows one number, **story time** (`src/motion/storyTime
 - Motion has to mean something: it tells the logo story or answers something the visitor did.
 - Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, and bouncy or overshooting easing.
 - Scrolling moves chapter to chapter at Dave's request (section 6.5). It stays as close to normal scrolling as it can: chapters taller than the screen scroll normally inside, every input works (wheel, touchpad, touch, keyboard, scrollbar), and it's off with reduced motion.
-- Content never waits for an animation. All text is in the HTML and readable right away.
+- Content never waits for an animation. All text is in the HTML and readable right away. The one exception, at Dave's request: the cover holds the hero's text back until the first scroll. It's still in the HTML for screen readers and search engines.
 
 ### 6.3 Reduced motion and fallbacks
 
@@ -241,7 +243,28 @@ Dave found free scrolling awkward: you could stop between two chapters, with the
 - **The logo** follows the scroll position, so each glide plays that part of the story. It moves like a critically damped spring (`spring.ts`), easing in and out.
 - **Tall chapters change pose near their edges.** A chapter's arrival and departure (the first and last 0.15 of its story time) are kept within 30% of a screen of its edges (`storyTime.ts`), so the logo has finished changing at every stop, even for the long Projects chapter on phones.
 - **Not used:** CSS scroll snapping. In testing, a small touchpad-style scroll snapped back to where it started instead of moving on, which would feel stuck on laptops.
-- **Reduced motion:** off; the page scrolls normally.
+- **Reduced motion:** starts in free scrolling. If the visitor switches to guided anyway, the page jumps between stops instead of gliding.
+- **The visitor decides** with the scroll switch (section 6.7).
+
+### 6.6 The cover (added 2026-10-15)
+
+Dave asked for the intact logo to get its own first screen, before the hero.
+
+- **Layout** (`src/sections/Cover.tsx`): a fixed layer behind the page with the name above, an empty "slot" in the middle, and the surname below, plus a `SCROLL ↓` cue. Decoration only (`aria-hidden`): the real heading is still the hero's `<h1>`. The chapter list fades in with the hero, so the cover shows only the logo, the name, and the top bar.
+- **The logo** stays in the Stage. The Stage measures the slot and writes where it is as CSS variables (`--fly-x`, `--fly-y`, `--fly-scale`); the frame's CSS moves between the slot and its usual place as `--cover` runs from 1 to 0. One logo, no copies, so the 3D logo, the flat fallback and the labels all keep working.
+- **Timing** (`src/motion/cover.ts`, story time): the name clears over 0 → 0.3, the logo flies over 0 → 0.5 (turning as it goes), the hero fades in over 0.3 → 0.65, the logo comes apart and the labels draw in by 0.95, the hero stop. The cover is the intro's first stop (story time 0), so guided scrolling glides cover → hero → About.
+- **Sharpness:** on the cover the logo is shown up to about 1.5 times its usual size, so the 3D canvas renders at least 1.5 pixels per CSS pixel (`dpr={[1.5, 1.75]}`), and measures its size before CSS scaling (`resize={{ offsetSize: true }}`).
+- **Sizes:** laptop: logo box `min(54vw, 80vh)`, name `min(9vw, 15vh)`; portrait tablets get more; phones wrap the first name onto two lines.
+- Lighthouse after the change: accessibility, best practices and SEO 100; performance unchanged against the previous build measured side by side; CLS 0.026 on desktop (the cover's big text when its font loads), still well within "good".
+
+### 6.7 The scroll switch (added 2026-10-15)
+
+Visitors choose between **Guided** (chapter to chapter, section 6.5) and **Free** (ordinary scrolling).
+
+- A small pill, `SCROLL · GUIDED | FREE`, in the top bar on laptops, and in the chapter menu on phones and tablets with a one-line explanation. Two buttons with `aria-pressed` in a `<fieldset>`, like the timeline filters.
+- Remembered in `localStorage` (`dt-scroll-mode`), so it sticks for the next visit. First visit: guided, or free if the device asks for reduced motion.
+- `ScrollModeProvider` holds the choice (shared through context) and switches `useSectionPaging` on or off.
+- Named "Guided" rather than "Auto": "auto-scroll" usually means a page that scrolls by itself.
 
 ## 7. Navigation and accessibility
 
@@ -260,15 +283,18 @@ Dave found free scrolling awkward: you could stop between two chapters, with the
 ```
 src/
   content/       profile.ts, projects.ts, experience.ts, types.ts   ← edit these to update the site
-  sections/      Intro.tsx, About.tsx, Projects.tsx, Experience.tsx, Contact.tsx
+  sections/      Cover.tsx, Intro.tsx, About.tsx, Projects.tsx, Experience.tsx, Contact.tsx
   components/    TopBar, ChapterRail, ChapterSheet (phone), ProjectCard, SpecSheet,
                  TimelineItem, TimelineFilters, CopyButton, ImageSlot (placeholder-aware image),
-                 SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText
+                 SheetFrame + SheetRulers (drawing sheet), ScanSweep, RollingText, ScrollModeToggle
   three/         LogoCanvas.tsx (canvas, lights, bloom), LogoModel.tsx (the pieces),
-                 shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states)
+                 shapes.ts (logo path data → THREE shapes), FallbackLogo.tsx (SVG states),
+                 ChapterNumber.tsx
   motion/        choreography.ts (pose keyframes + interpolation, pure functions),
                  storyTime.ts (scroll → story time), useScrollStory.ts, useStoryTime.ts,
-                 ChapterProvider.tsx (active chapter)
+                 ChapterProvider.tsx (active chapter), cover.ts (cover → hero timing),
+                 paging.ts + useSectionPaging.ts (guided scrolling), spring.ts,
+                 scrollMode.ts + ScrollModeProvider.tsx (the scroll switch)
   styles/        tokens.css, global.css
   App.tsx
 public/          images/, cv.pdf, favicon.svg
@@ -292,6 +318,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
   - content sanity: every project has a "my part" line and valid link URLs
   - drawing sheet: scroll progress, the title block's part names, and when and which way the sweep plays
   - chapter-to-chapter scrolling: the stops, where each gesture goes, settling after a swipe, the spring
+  - the cover's timing (the name clears before the hero appears), and the scroll switch (default, remembered choice)
 - `npm run build` must pass.
 - **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
 - **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.
