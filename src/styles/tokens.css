@@ -14,7 +14,6 @@
   --red: #ff2d3d; /* the brand red */
   --red-label: #ff4d5b; /* small monospace labels */
   --red-hot: #ffb1b8; /* the hottest part of a glow */
-  --red-glow: rgb(255 45 61 / 0.35);
 
   /* ---- fonts ---- */
   --font-sans: 'Archivo Variable', system-ui, sans-serif;

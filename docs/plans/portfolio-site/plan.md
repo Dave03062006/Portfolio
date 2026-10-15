@@ -134,3 +134,32 @@ None. The tasks run in order, because each one builds on the last: the static si
 - **CSS sticky positioning for the stage** instead of scroll-pinning code. It's simpler and more reliable on phones.
 - **A ref-based story store for per-frame values.** React state is used only for the active chapter. This keeps 60 fps without re-rendering, and it's a good lesson for the code tour.
 - **No subagents.** I do the work in this session, as the session guidelines require.
+
+## Results (2026-10-15)
+
+All five tasks are done. The commits are in `git log`.
+
+**Checks:** 78 unit tests pass. `npm run check` (TypeScript + Oxlint) is clean. `npm run build` succeeds.
+
+**Download size:** the first load is 80 KB of JavaScript (gzipped), within the 150 KB target. The 3D logo is a separate 258 KB that loads after the page, when the browser is idle.
+
+**Lighthouse** (local production build, headless Chrome):
+
+| | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| Desktop | 96 | 100 | 100 | 100 |
+| Mobile | 64 | 100 | 100 | 100 |
+
+The mobile Performance target (≥ 80) is **not met**. There are two causes:
+1. The page is rendered in the browser, so the text appears only after the JavaScript runs. On Lighthouse's simulated slow phone, that gives First Contentful Paint 2.6 s and Largest Contentful Paint 3.6 s.
+2. Starting the 3D logo still blocks for about 1 s on the 4×-throttled CPU (roughly 0.25 s on a real mid-range phone).
+
+Options if it matters: pre-render the HTML at build time (`renderToString` + `hydrateRoot`), which helps the most, and/or load the 3D only on the first scroll or touch on touch devices.
+
+**Changes from the plan, and why:**
+- **Task 3:** dropped GSAP. A scroll listener plus pure functions did the job.
+- **Task 4:** dropped drei's `PerformanceMonitor`. On-demand rendering makes its frame-rate readings unreliable.
+- **Task 5:** profiling showed the reflection environment (PMREM) blocking the page for about 0.8 s on desktop. Area lights were better but still heavy, and added 100 KB. The studio is now plain point lights, and drei and `@react-three/postprocessing` were replaced with a few lines of plain three.js and `postprocessing`.
+- Project images are WebP illustrations (`design/project-art/`), rendered by `scripts/render-images.mjs`, which also makes the share image and the iPhone icon.
+
+**Still to do with Dave:** publish (GitHub + Vercel), then set `SITE_URL` in `vite.config.ts`. Decide which CV to publish (`public/cv.pdf` is git-ignored until then). Add `public/images/portrait.jpg`.

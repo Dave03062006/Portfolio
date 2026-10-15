@@ -1,15 +1,5 @@
 /* Small text styles shared by several components. Import with: import text from '../styles/text.module.css' */
 
-/* Small monospace caps, like the labels on a technical drawing */
-.label {
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
 /* The red line above each section heading, e.g. "03 · PROJECTS · D" */
 .eyebrow {
   font-family: var(--font-mono);
