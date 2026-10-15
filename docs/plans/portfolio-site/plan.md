@@ -162,4 +162,6 @@ Options if it matters: pre-render the HTML at build time (`renderToString` + `hy
 - **Task 5:** profiling showed the reflection environment (PMREM) blocking the page for about 0.8 s on desktop. Area lights were better but still heavy, and added 100 KB. The studio is now plain point lights, and drei and `@react-three/postprocessing` were replaced with a few lines of plain three.js and `postprocessing`.
 - Project images are WebP illustrations (`design/project-art/`), rendered by `scripts/render-images.mjs`, which also makes the share image and the iPhone icon.
 
-**Still to do with Dave:** publish (GitHub + Vercel), then set `SITE_URL` in `vite.config.ts`. Decide which CV to publish (`public/cv.pdf` is git-ignored until then). Add `public/images/portrait.jpg`.
+**Published 2026-10-15** at https://dave-tristian-portfolio.vercel.app (Vercel, deploys every push to `main`; `SITE_URL` already matches). Live Lighthouse, run back to back with the local build: identical within a point. Laptop 81–84 performance, phone 69; accessibility and SEO 100; best practices 96, only because `public/images/portrait.jpg` doesn't exist yet (its 404 is logged).
+
+**Still to do with Dave:** add `public/images/portrait.jpg`.

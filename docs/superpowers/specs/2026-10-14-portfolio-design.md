@@ -337,7 +337,7 @@ docs/            superpowers/specs/ (this file), code-tour.md
 
 - **Location:** `C:\Users\DAVE TRISTIAN\Projects\portfolio`, outside OneDrive so `node_modules` doesn't sync.
 - **Git:** this repo. `.gitignore` covers `node_modules/`, `dist/`, `.superpowers/` and `.env*`.
-- **Hosting:** GitHub repo → Vercel, which deploys automatically on every push to `main`. Dave signs in to both, and the code tour walks him through it. The free URL looks like `<name>.vercel.app`.
+- **Hosting:** GitHub repo → Vercel, which deploys automatically on every push to `main`. Dave signs in to both, and the code tour walks him through it. Live at https://dave-tristian-portfolio.vercel.app.
 - **Meta:** title "Dave Tristian Nurcahyo · Portfolio", a description, an Open Graph preview image (the logo with his name), and favicons from the flat logo (SVG plus PNG fallbacks).
 
 ## 11. Assets Dave adds later (placeholders until then)

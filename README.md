@@ -1,5 +1,7 @@
 # Dave Tristian Nurcahyo · Portfolio
 
+**Live: [dave-tristian-portfolio.vercel.app](https://dave-tristian-portfolio.vercel.app)**
+
 ![The DT logo next to the name Dave Tristian Nurcahyo](public/og.jpg)
 
 My one-page portfolio. The DT logo is a live 3D object: it opens the site big and centered, turning to face your cursor, with my name around it switching on letter by letter like a neon sign, then flickering at random (a pull cord turns the flicker off). As you scroll, it flies to its place, turns, comes apart into an exploded view, and brings one piece forward for each chapter. **D** for Developer leads into my projects, **T** for Team into my organizations and kepanitiaan, and the glowing **core** ("always learning") into the about section. At the end it comes back together.
