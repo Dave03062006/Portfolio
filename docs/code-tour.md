@@ -511,6 +511,8 @@ git commit -m "Describe what you changed"
 git push
 ```
 
+Run `npm run build` before you push. It catches most problems before Vercel sees them. One thing it can miss: Vercel's computers treat `Larva.webp` and `larva.webp` as different files, and Windows doesn't, so write file names with exactly the same capitals as on disk. If a build on Vercel fails, the previous version stays live, and the error is under **Deployments** in your Vercel project.
+
 ---
 
 ## 17. Glossary

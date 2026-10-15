@@ -18,7 +18,7 @@ Built with React, TypeScript, Vite and React Three Fiber.
 
 ## Run it
 
-You need [Node.js](https://nodejs.org) 20 or newer.
+You need [Node.js](https://nodejs.org) 22.12 or newer.
 
 ```bash
 npm install
@@ -73,10 +73,11 @@ scripts/       screenshot and image-rendering tools
 ## Publish it (Vercel)
 
 1. Push this repository to GitHub.
-2. Go to [vercel.com](https://vercel.com), choose **Add New → Project**, and import the repository. The defaults are right: framework Vite, build command `npm run build`, output folder `dist`.
-3. After the first deploy, copy your site's address into `SITE_URL` in `vite.config.ts`, then commit and push. This makes link previews (WhatsApp, LinkedIn, Instagram) show the right image.
+2. Go to [vercel.com](https://vercel.com), sign up with GitHub, choose **Add New → Project**, and import the repository.
+3. Change **Project Name** to `dave-tristian-portfolio`. The name becomes the site's address, `dave-tristian-portfolio.vercel.app`, which is what `SITE_URL` in `vite.config.ts` expects. Leave the rest as Vercel detects it (framework Vite, build command `npm run build`, output folder `dist`) and press **Deploy**.
+4. If the site ends up at a different address, put that address in `SITE_URL`, then commit and push. This makes link previews (WhatsApp, LinkedIn, Instagram) show the right image.
 
-From then on, every push to `main` updates the live site.
+From then on, every push to `main` updates the live site. `vercel.json` lets browsers keep the built code, styles and fonts (`dist/assets/`) for a year. Their file names change whenever their content does, so visitors still get every update.
 
 ## Learn how it works
 
