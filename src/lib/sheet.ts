@@ -1,4 +1,5 @@
 import type { Chapter, ChapterId } from '../content/types'
+import { directionBetween, type Direction } from '../motion/direction'
 
 /** How far down the page you are: 0 at the top, 1 at the very bottom. */
 export function scrollProgress(scrollY: number, pageHeight: number, viewportHeight: number): number {
@@ -16,19 +17,15 @@ export function sheetPart(chapter: Chapter): string {
 /** Chapter changes this soon after the page loads are the page finding its place, not the visitor scrolling. */
 const SETTLE_MS = 800
 
-type ChapterChange = {
-  from: ChapterId
-  to: ChapterId
-  /** Whether the sweep has already played on this visit */
-  played: boolean
-  reduced: boolean
-  msSinceLoad: number
-}
+type ChapterChange = { from: ChapterId; to: ChapterId; reduced: boolean; msSinceLoad: number }
 
 /**
- * Whether to play the big scan line across the whole screen. It plays once per visit:
- * the first time the visitor scrolls out of the intro. Seeing it at every chapter would get tiring.
+ * Whether the big scan line sweeps across the screen when the chapter changes, and which way:
+ * down the screen when the visitor moves down the page, up when they go back. It stays off
+ * while the page is still finding its place after loading, and for people who've asked
+ * their device for less motion.
  */
-export function shouldSweep({ from, to, played, reduced, msSinceLoad }: ChapterChange): boolean {
-  return !played && !reduced && from === 'intro' && to !== 'intro' && msSinceLoad > SETTLE_MS
+export function sweepDirection({ from, to, reduced, msSinceLoad }: ChapterChange): Direction | null {
+  if (from === to || reduced || msSinceLoad <= SETTLE_MS) return null
+  return directionBetween(from, to)
 }

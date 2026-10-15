@@ -32,6 +32,12 @@ export const KEYFRAMES: readonly Keyframe[] = [
   { at: 4.25, pose: CHAPTER_POSES.contact },
 ]
 
+/**
+ * The intro's second resting place: the logo has come apart and all three labels are showing.
+ * Intro.module.css puts a scroll stop here. Keep the two in step.
+ */
+export const EXPLODED_STOP = 0.95
+
 const lerp = (a: number, b: number, amount: number) => a + (b - a) * amount
 /** Eases in and out, so moves start and stop gently instead of jerking. */
 const smooth = (x: number) => x * x * (3 - 2 * x)

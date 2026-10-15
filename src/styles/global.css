@@ -12,7 +12,8 @@
 html {
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
-  /* Clicking a chapter link glides to it. The top bar is fixed, so leave room for it. */
+  /* Clicking a chapter link glides to it. The top bar is fixed, so leave room for it.
+     (Chapter-to-chapter scrolling is in src/motion/useSectionPaging.ts, which reads this padding.) */
   scroll-behavior: smooth;
   scroll-padding-top: var(--topbar-h);
 }

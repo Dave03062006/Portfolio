@@ -185,21 +185,22 @@ Each card shows its course as a small caption. Every project here was a course's
 | Moment | What happens |
 |---|---|
 | Page load | The seam flickers on once, like a neon tube starting (about 700 ms). It never loops. The drawing sheet's border draws itself in, and the chapter number is scanned in behind the logo (section 6.4). |
-| Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. The first time per visit, a red scan line sweeps down the whole screen. |
-| Every chapter change | The big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
+| Intro → About | The logo turns like a turntable, then comes apart. Leader lines draw in and the three labels appear. |
+| Every chapter change | A red scan line sweeps the whole screen in the direction of travel, the big chapter number behind the logo is redrawn by a thin scan line, and the title block rolls to the new chapter. |
 | About | Focus on the **core**: its glow rises while the D and T dim and move back. |
 | Projects | Focus on the **D**: it moves toward the viewer with a red edge light. The T and core dim. |
 | Experience | Focus on the **T**: same treatment. |
 | Contact | The pieces reassemble, decelerating into place. The glow peaks and the logo faces front. |
 
-Every scroll animation follows one number, **story time** (`src/motion/storyTime.ts`): 0 → 1 while the intro's hero is pinned and the logo comes apart, then 1 → 2 through About, 2 → 3 through Projects, and so on. The logo eases toward it with light smoothing (about half a second). It stops when scrolling stops and rewinds exactly when scrolling back. There's no snapping. *(Built with a small scroll listener and pure functions instead of GSAP: same result, one less library.)*
+Every scroll animation follows one number, **story time** (`src/motion/storyTime.ts`): 0 → 1 while the intro's hero is pinned and the logo comes apart, then 1 → 2 through About, 2 → 3 through Projects, and so on. The logo follows it like a well-damped spring (about a second, easing in and out, no overshoot), and rewinds exactly when scrolling back. Scrolling moves from chapter to chapter (section 6.5). *(Built with a small scroll listener and pure functions instead of GSAP: same result, one less library.)*
 
 **Small feedback:** the chapter list's red marker slides to the active chapter (about 250 ms). Project cards get a red border and a brighter screenshot on hover. COPY becomes "Copied ✓" for 1.5 s. UI transitions take 200–400 ms with one "ease-out" curve family (`power3.out`).
 
 ### 6.2 Rules
 
 - Motion has to mean something: it tells the logo story or answers something the visitor did.
-- Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, bouncy or overshooting easing, and scroll-jacking. The scroll wheel always behaves normally.
+- Banned: fade-up on every paragraph, floating blobs or particles, typewriter text, custom cursors, and bouncy or overshooting easing.
+- Scrolling moves chapter to chapter at Dave's request (section 6.5). It stays as close to normal scrolling as it can: chapters taller than the screen scroll normally inside, every input works (wheel, touchpad, touch, keyboard, scrollbar), and it's off with reduced motion.
 - Content never waits for an animation. All text is in the HTML and readable right away.
 
 ### 6.3 Reduced motion and fallbacks
@@ -220,14 +221,27 @@ After seeing the finished site, Dave liked the design but found the effects "a b
 - On load, the border draws itself in from two opposite corners (about 1 s). The rulers, letters and title block fade in after it.
 
 **Chapter moments:**
-- A giant outlined chapter number sits behind the logo. At every chapter change, a thin scan line redraws it from the top (0.9 s). This is the quiet version that repeats.
-- The first time the visitor scrolls out of the intro, a scan line sweeps down the whole screen (1.8 s), and everything it passes turns red, then cools back down. It plays once per visit, never on load or after a deep link (`shouldSweep` in `src/lib/sheet.ts`).
+- A giant outlined chapter number sits behind the logo, tucked behind the top of the pieces. At every chapter change, a thin scan line redraws it (0.9 s).
+- At every chapter change, a scan line sweeps the whole screen (1.5 s), and everything it passes turns red, then cools back down. It travels the way the page did: top to bottom when scrolling down, bottom to top when going back up. The number's scan and the title block's roll follow the same direction. Never on load or after a deep link (`sweepDirection` in `src/lib/sheet.ts`).
+- *History:* the first version played the full sweep only once per visit, because Dave worried it would get annoying. After trying it, he asked for it at every chapter, direction-aware.
 
-**Phones:** the lighter version Dave agreed to. There's no border or rulers: just a thin progress line down the right edge, the chapter number behind the logo, and the one-time sweep.
+**Phones:** the lighter version Dave agreed to. There's no border or rulers: just a thin progress line down the right edge, the chapter number behind the logo, and the sweep.
 
 **Reduced motion:** the sheet, rulers and progress line stay, since they follow the scroll directly. Nothing draws in, the title block and number swap instantly, and the sweep never plays.
 
 Lighthouse after the change (Oct 2026): accessibility, best practices and SEO still 100; performance 94 on desktop and 70–74 on mobile, within run-to-run noise of before.
+
+### 6.5 Chapter-to-chapter scrolling (added 2026-10-15)
+
+Dave found free scrolling awkward: you could stop between two chapters, with the logo caught halfway between poses. Now the page never rests between chapters.
+
+- **Stops** (`src/motion/paging.ts`): the name, the logo taken apart with its labels (story time 0.95, `EXPLODED_STOP`), the start of every chapter (just below the top bar), and the end of every chapter that is clearly taller than the screen. In between those two, a tall chapter scrolls normally.
+- **Wheel, touchpad, keyboard** (`useSectionPaging.ts`): one gesture at a stop glides the page to the next stop (about 0.9–1.2 s, easing in and out); the rest of that gesture, including a touchpad's coasting, is ignored. Inside a tall chapter, scrolling is normal but stops at the chapter's edge first. Going back up from a chapter lands on the end of the chapter above, so nothing is skipped.
+- **Touch and the scrollbar** scroll as usual. If the page comes to rest between chapters, it glides on in the direction it was moving.
+- **The logo** follows the scroll position, so each glide plays that part of the story. It moves like a critically damped spring (`spring.ts`), easing in and out.
+- **Tall chapters change pose near their edges.** A chapter's arrival and departure (the first and last 0.15 of its story time) are kept within 30% of a screen of its edges (`storyTime.ts`), so the logo has finished changing at every stop, even for the long Projects chapter on phones.
+- **Not used:** CSS scroll snapping. In testing, a small touchpad-style scroll snapped back to where it started instead of moving on, which would feel stuck on laptops.
+- **Reduced motion:** off; the page scrolls normally.
 
 ## 7. Navigation and accessibility
 
@@ -276,7 +290,8 @@ docs/            superpowers/specs/ (this file), code-tour.md
   - choreography: the pose at each keyframe, interpolation, clamping outside 0–1
   - experience filter rule, including the Student Union entry showing under KEPANITIAAN
   - content sanity: every project has a "my part" line and valid link URLs
-  - drawing sheet: scroll progress, the title block's part names, and when the one-time sweep may play
+  - drawing sheet: scroll progress, the title block's part names, and when and which way the sweep plays
+  - chapter-to-chapter scrolling: the stops, where each gesture goes, settling after a swipe, the spring
 - `npm run build` must pass.
 - **Visual check:** headless-browser screenshots of every section at 1440×900 and 390×844, plus reduced-motion and no-WebGL runs.
 - **Targets** (aims, not hard gates): Lighthouse Accessibility, Best Practices and SEO ≥ 95, Performance ≥ 80 on mobile. Initial JavaScript before the lazily loaded 3D chunk stays under about 150 KB gzipped.

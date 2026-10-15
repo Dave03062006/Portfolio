@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KEYFRAMES, TEARDOWN, labelReveal, poseAt, restingTime } from './choreography'
+import { EXPLODED_STOP, KEYFRAMES, TEARDOWN, labelReveal, poseAt, restingTime } from './choreography'
 import { CHAPTER_POSES } from './pose'
 
 describe('poseAt', () => {
@@ -63,6 +63,14 @@ describe('labelReveal', () => {
   it('draws the lines before the text appears', () => {
     const { lines, text } = labelReveal(0.78)
     expect(lines).toBeGreaterThan(text)
+  })
+})
+
+describe('EXPLODED_STOP', () => {
+  it('rests where the logo is apart and every label is fully shown, with or without motion', () => {
+    expect(poseAt(EXPLODED_STOP).spread).toBe(1)
+    expect(labelReveal(EXPLODED_STOP)).toEqual({ lines: 1, text: 1 })
+    expect(restingTime(EXPLODED_STOP)).toBe(1)
   })
 })
 

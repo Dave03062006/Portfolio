@@ -55,7 +55,7 @@ App
 │   ├── ChapterRail        the numbered list on the left (laptops)
 │   ├── Stage              the logo area (section 13)
 │   ├── SheetFrame         the drawing-sheet border around the screen (section 14)
-│   ├── ScanSweep          the red scan line, once per visit (section 14)
+│   ├── ScanSweep          the red scan line at each chapter change (section 14)
 │   └── main
 │       ├── SheetRulers    the rulers in the margins
 │       ├── Intro          01
@@ -338,12 +338,14 @@ Follow it through four files:
 
 1. [`storyTime.ts`](../src/motion/storyTime.ts) is a **pure function**: given the scroll position and where each section sits, it returns story time. Pure means it only calculates and never touches the page, which makes it easy to test.
 2. [`useScrollStory.ts`](../src/motion/useScrollStory.ts) listens to scrolling, measures the sections (again whenever they change size), and writes the result into a plain shared object, [`story.ts`](../src/motion/story.ts). It's not state, on purpose: scrolling changes it constantly.
-3. [`useStoryTime.ts`](../src/motion/useStoryTime.ts) reads `story.time` on every animation frame and **glides** toward it, so a mouse wheel's big jumps still look smooth. `CATCH_UP` controls how quickly it follows.
+3. [`useStoryTime.ts`](../src/motion/useStoryTime.ts) reads `story.time` on every animation frame and **glides** toward it like a spring ([`spring.ts`](../src/motion/spring.ts)): it eases in, then settles without overshooting. `SPRING` controls how quickly it follows.
 4. [`choreography.ts`](../src/motion/choreography.ts) is the script. `KEYFRAMES` is a list of moments and the pose the logo should be in at each one. `poseAt(time)` blends between the two nearest keyframes.
 
 A **pose** ([`pose.ts`](../src/motion/pose.ts)) describes the logo at one moment: how far apart the pieces are (`spread`), which part is in focus, how bright the glow is, and the rotation.
 
-> **Try it.** In `choreography.ts`, change the second keyframe's `rotY: -28` to `rotY: -60`. Scroll slowly through the intro: the logo now swings much further as it turns. Then try `CATCH_UP = 2` in `useStoryTime.ts` for a lazier, floatier feel.
+**Chapter to chapter.** Scrolling never leaves the page halfway between two chapters, with the logo caught mid-change. [`paging.ts`](../src/motion/paging.ts) works out the resting places ("stops"): the name, the logo taken apart, and the start of each chapter, plus the end of chapters taller than the screen, which scroll normally in between. [`useSectionPaging.ts`](../src/motion/useSectionPaging.ts) listens to the mouse wheel, touchpad and keyboard, and turns one gesture into a glide to the next stop. Swipes on a phone scroll as usual; if the page stops between chapters, it glides on the way it was going. Since the logo follows the scroll position, it plays its part of the story during every glide. The rules live in pure functions, so [`paging.test.ts`](../src/motion/paging.test.ts) can check them without a browser.
+
+> **Try it.** In `choreography.ts`, change the second keyframe's `rotY: -28` to `rotY: -60`. Scroll into the intro: the logo now swings much further as it turns. Then try `SPRING = 3` in `useStoryTime.ts` for a lazier, floatier follow, or make glides slower in `glideDuration` in `paging.ts`.
 
 ---
 
@@ -386,7 +388,7 @@ The border around the screen, the big chapter number behind the logo and the red
 - **The rulers aren't fixed to the screen at all.** [`SheetRulers`](../src/components/SheetFrame.tsx) puts two tall strips *inside the page*, so the browser scrolls them along with the content, perfectly in step, with no code. Their tick marks are CSS gradients repeated down the strip.
 - **Each chapter marks its own place on the ruler.** [`Section.tsx`](../src/components/Section.tsx) puts `data-number="03"` on its `<section>`, and a `::before` rule in `Section.module.css` draws a red line with that number (`content: attr(data-number)`). When the mark passes the small red pointer at the middle of the left margin, the chapter changes. It's the same middle line `ChapterProvider` watches.
 
-**Animating a change: keep the old value for a moment.** When the chapter changes, the title block's text rolls over like a counter ([`RollingText.tsx`](../src/components/RollingText.tsx)), and the big number fades while the new one is drawn in ([`ChapterNumber.tsx`](../src/three/ChapterNumber.tsx)). Both need the *old* value on screen next to the new one. The hook [`useOutgoing.ts`](../src/motion/useOutgoing.ts) remembers it:
+**Animating a change: keep the old value for a moment.** When the chapter changes, the title block's text rolls over like a counter ([`RollingText.tsx`](../src/components/RollingText.tsx)), and the big number fades while the new one is drawn in ([`ChapterNumber.tsx`](../src/three/ChapterNumber.tsx)). Both move the way the page just did, which [`useChapterDirection.ts`](../src/motion/useChapterDirection.ts) works out: down the page, or back up. Both also need the *old* value on screen next to the new one. The hook [`useOutgoing.ts`](../src/motion/useOutgoing.ts) remembers it:
 
 ```ts
 const [state, setState] = useState({ value, outgoing: null })
@@ -404,15 +406,15 @@ Setting state *while rendering* is usually a mistake, but this exact shape (comp
 
 A new key means a brand-new element, and a brand-new element plays its CSS animation from the start. That's the whole trick.
 
-**The one-time sweep** ([`ScanSweep.tsx`](../src/components/ScanSweep.tsx)) plays the first time you scroll out of the intro, and never again on that visit. A ref remembers the last chapter and whether it has played: bookkeeping, so a ref rather than state. The decision is a pure function, `shouldSweep` in [`src/lib/sheet.ts`](../src/lib/sheet.ts), so it's easy to test. The movement uses the browser's **Web Animations API**, `element.animate(keyframes, timing)`, which is a CSS animation started from JavaScript. The red tint is `mix-blend-mode: multiply`: red times white text gives red text, while red times black stays black.
+**The sweep** ([`ScanSweep.tsx`](../src/components/ScanSweep.tsx)) plays at every chapter change: down the screen when you scroll down, up the screen when you go back up. A ref remembers the last chapter: bookkeeping, so a ref rather than state. The decision is a pure function, `sweepDirection` in [`src/lib/sheet.ts`](../src/lib/sheet.ts), so it's easy to test. The movement uses the browser's **Web Animations API**, `element.animate(keyframes, timing)`, which is a CSS animation started from JavaScript. Going up, the same layers play flipped (`scaleY(-1)`), so the line leads and the red trails behind it. The red tint is `mix-blend-mode: multiply`: red times white text gives red text, while red times black stays black.
 
-> **Try it.** In `ScanSweep.tsx`, change `duration: 1800` to `5000`. Reload at the top of the page and scroll down into About to watch the sweep in slow motion. Then in `tokens.css`, try `--sheet: 2rem` for a wider margin. (Undo both.)
+> **Try it.** In `ScanSweep.tsx`, change `duration: 1500` to `5000`, then scroll from chapter to chapter to watch the sweep in slow motion. Then in `tokens.css`, try `--sheet: 2rem` for a wider margin. (Undo both.)
 
 ---
 
 ## 15. Tests
 
-Run `npm test`. 90 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
+Run `npm test`. 107 checks run in a couple of seconds. Tests live next to what they test, in files ending in `.test.ts(x)`. Open [`src/lib/experienceFilter.test.ts`](../src/lib/experienceFilter.test.ts):
 
 ```ts
 it('shows only teaching under TEACHING', () => {
@@ -473,6 +475,9 @@ In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, t
 
 ### Change the logo's labels
 `teardown` in `profile.ts`. Keep each label about its own part: D is Developer, T is Team, and the core is Always learning.
+
+### Go back to plain scrolling
+Delete the `useSectionPaging()` line in `App.tsx` (and its import). Scrolling then stops wherever the visitor stops; everything else keeps working.
 
 ### Turn the drawing sheet off
 In `App.tsx`, delete `<SheetFrame />`, `<ScanSweep />` and `<SheetRulers />` (and their imports). In `tokens.css`, set `--sheet: 0px` inside the tablet block too: the top bar moves back up and the chapter marks on the ruler disappear. The big number behind the logo is separate: it's `<ChapterNumber />` in `Stage.tsx`.

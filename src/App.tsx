@@ -5,6 +5,7 @@ import { SheetFrame, SheetRulers } from './components/SheetFrame'
 import { TopBar } from './components/TopBar'
 import { ChapterProvider } from './motion/ChapterProvider'
 import { useScrollStory } from './motion/useScrollStory'
+import { useSectionPaging } from './motion/useSectionPaging'
 import { About } from './sections/About'
 import { Contact } from './sections/Contact'
 import { Experience } from './sections/Experience'
@@ -19,6 +20,8 @@ import { Stage } from './three/Stage'
 export default function App() {
   // Turns scrolling into "story time", which the logo follows (see src/motion/storyTime.ts).
   useScrollStory()
+  // Scrolling glides from chapter to chapter, never stopping halfway (see src/motion/paging.ts).
+  useSectionPaging()
 
   return (
     <ChapterProvider>

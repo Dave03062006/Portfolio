@@ -3,6 +3,7 @@ import { CHAPTERS } from '../content/chapters'
 import { profile } from '../content/profile'
 import { scrollProgress, sheetPart } from '../lib/sheet'
 import { useActiveChapter } from '../motion/chapterContext'
+import { useChapterDirection } from '../motion/useChapterDirection'
 import { RollingText } from './RollingText'
 import styles from './SheetFrame.module.css'
 
@@ -20,6 +21,8 @@ const SHEET_COUNT = String(CHAPTERS.length).padStart(2, '0')
 export function SheetFrame() {
   const active = useActiveChapter()
   const chapter = CHAPTERS.find((c) => c.id === active) ?? CHAPTERS[0]
+  // The title block rolls the same way the page moved: new text from below going down, from above going back up
+  const enterFrom = useChapterDirection() === 'up' ? 'above' : 'below'
   const progressRef = useRef<HTMLDivElement>(null)
 
   // Keep the progress line in step with the scroll position. It writes a CSS variable
@@ -73,18 +76,18 @@ export function SheetFrame() {
         <span className={styles.cell}>
           Sheet{' '}
           <b>
-            <RollingText text={chapter.number} /> / {SHEET_COUNT}
+            <RollingText text={chapter.number} enterFrom={enterFrom} /> / {SHEET_COUNT}
           </b>
         </span>
         <span className={`${styles.cell} ${styles.chapterCell}`}>
           <b>
-            <RollingText text={chapter.label} />
+            <RollingText text={chapter.label} enterFrom={enterFrom} />
           </b>
         </span>
         <span className={styles.cell}>
           Part{' '}
           <b>
-            <RollingText text={sheetPart(chapter)} />
+            <RollingText text={sheetPart(chapter)} enterFrom={enterFrom} />
           </b>
         </span>
         <span className={styles.cell}>

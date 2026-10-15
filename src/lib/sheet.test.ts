@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CHAPTERS } from '../content/chapters'
-import { scrollProgress, sheetPart, shouldSweep } from './sheet'
+import { scrollProgress, sheetPart, sweepDirection } from './sheet'
 
 describe('scrollProgress', () => {
   it('goes from 0 at the top of the page to 1 at the bottom', () => {
@@ -25,27 +25,25 @@ describe('sheetPart', () => {
   })
 })
 
-describe('shouldSweep', () => {
-  const leavingIntro = { from: 'intro', to: 'about', played: false, reduced: false, msSinceLoad: 5000 } as const
+describe('sweepDirection', () => {
+  const change = { from: 'intro', to: 'about', reduced: false, msSinceLoad: 5000 } as const
 
-  it('plays the first time the visitor scrolls out of the intro', () => {
-    expect(shouldSweep(leavingIntro)).toBe(true)
+  it('sweeps down the screen at every chapter change down the page', () => {
+    expect(sweepDirection(change)).toBe('down')
+    expect(sweepDirection({ ...change, from: 'projects', to: 'experience' })).toBe('down')
   })
 
-  it('plays only once per visit', () => {
-    expect(shouldSweep({ ...leavingIntro, played: true })).toBe(false)
-  })
-
-  it('stays quiet for the other chapter changes', () => {
-    expect(shouldSweep({ ...leavingIntro, from: 'about', to: 'projects' })).toBe(false)
-    expect(shouldSweep({ ...leavingIntro, from: 'about', to: 'intro' })).toBe(false)
+  it('sweeps up the screen when the visitor goes back up', () => {
+    expect(sweepDirection({ ...change, from: 'about', to: 'intro' })).toBe('up')
+    expect(sweepDirection({ ...change, from: 'contact', to: 'projects' })).toBe('up')
   })
 
   it('ignores the page finding its place just after loading, like a link to #projects', () => {
-    expect(shouldSweep({ ...leavingIntro, to: 'projects', msSinceLoad: 120 })).toBe(false)
+    expect(sweepDirection({ ...change, to: 'projects', msSinceLoad: 120 })).toBeNull()
   })
 
-  it('never plays with reduced motion', () => {
-    expect(shouldSweep({ ...leavingIntro, reduced: true })).toBe(false)
+  it('stays off when the chapter has not changed, and with reduced motion', () => {
+    expect(sweepDirection({ ...change, to: 'intro' })).toBeNull()
+    expect(sweepDirection({ ...change, reduced: true })).toBeNull()
   })
 })

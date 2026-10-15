@@ -9,32 +9,56 @@
   grid-area: 1 / 1;
 }
 
-.in {
-  animation: roll-in 450ms var(--ease-out) both;
+/* Scrolling down: everything moves up, like the page */
+.enterBelow {
+  animation: enter-below 450ms var(--ease-out) both;
 }
 
-.out {
-  animation: roll-out 450ms var(--ease-out) both;
+.leaveUp {
+  animation: leave-up 450ms var(--ease-out) both;
 }
 
-@keyframes roll-in {
+/* Going back up: everything moves down */
+.enterAbove {
+  animation: enter-above 450ms var(--ease-out) both;
+}
+
+.leaveDown {
+  animation: leave-down 450ms var(--ease-out) both;
+}
+
+@keyframes enter-below {
   from {
     transform: translateY(110%);
   }
 }
 
-@keyframes roll-out {
+@keyframes leave-up {
   to {
     transform: translateY(-110%);
   }
 }
 
+@keyframes enter-above {
+  from {
+    transform: translateY(-110%);
+  }
+}
+
+@keyframes leave-down {
+  to {
+    transform: translateY(110%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .in {
+  .enterBelow,
+  .enterAbove {
     animation: none;
   }
 
-  .out {
+  .leaveUp,
+  .leaveDown {
     display: none;
   }
 }

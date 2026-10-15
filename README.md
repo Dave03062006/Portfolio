@@ -8,12 +8,13 @@ Built with React, TypeScript, Vite and React Three Fiber.
 
 ## Highlights
 
-- **Scroll-driven 3D logo.** Every animation follows a single number, "story time", calculated from the scroll position. Stop scrolling and it stops; scroll back and it rewinds.
-- **A drawing sheet around the screen.** A border with rulers that scroll with the page, a title block that rolls to each chapter, and a red edge that fills as you read. Each chapter's number is scanned in behind the logo, and the first time you leave the intro, a red scan line sweeps the whole screen.
+- **Scroll-driven 3D logo.** Every animation follows a single number, "story time", calculated from the scroll position. Scroll back and it rewinds.
+- **Chapter to chapter.** One scroll glides the page to the next chapter, so it never stops halfway between two. Long chapters scroll normally inside.
+- **A drawing sheet around the screen.** A border with rulers that scroll with the page, a title block that rolls to each chapter, and a red edge that fills as you read. At every chapter change, a red scan line sweeps the screen in the direction you're going, and the chapter number is scanned in behind the logo.
 - **Works for everyone.** There's a reduced-motion mode (still poses with crossfades), a flat SVG logo for browsers without 3D, full keyboard navigation, and a 100 accessibility score in Lighthouse.
 - **Easy to update.** All text lives in three content files, so editing doesn't touch layout code.
 - **Light on devices.** The 3D code loads after the page, compiles its shaders in the background where the browser supports it, and only draws when something changes.
-- **Tested.** 90 unit tests cover the content, the scroll choreography, the logo geometry and the components.
+- **Tested.** 107 unit tests cover the content, the scroll choreography, the logo geometry and the components.
 
 ## Run it
 

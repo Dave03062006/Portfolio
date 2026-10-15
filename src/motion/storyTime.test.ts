@@ -33,6 +33,13 @@ describe('storyTime', () => {
     expect(at(4800 - 450 + 750)).toBeCloseTo(3.5) // halfway through Experience
   })
 
+  it('keeps the pose changes of a tall chapter within 30% of a screen of its edges', () => {
+    // Projects is 2000 px tall: 15% of it would be 300 px, more than 30% of the screen (270 px)
+    expect(at(2800 - 450 + 270)).toBeCloseTo(2.15) // fully arrived 270 px in
+    expect(at(2800 - 450 + 2000 - 270)).toBeCloseTo(2.85) // starts leaving 270 px before the end
+    expect(at(2800 - 450 + 1000)).toBeCloseTo(2.5) // the middle is still the middle
+  })
+
   it('never goes backwards as the page scrolls down', () => {
     let previous = -Infinity
     for (let y = 0; y <= 6400; y += 25) {

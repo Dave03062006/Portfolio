@@ -36,24 +36,43 @@
   content: attr(data-number);
 }
 
-/* The new number is revealed from the top down, exactly as fast as the scan line moves */
+/* Scrolling down: the new number is revealed from the top down, as fast as the scan line moves */
 .in {
   animation: draw-in 900ms var(--ease-out) both;
 }
 
-/* The scan line: a bright line along the bottom of a full-size layer, slid from the top of
-   the number to the bottom, with a soft red trail above it. The mask fades out its ends. */
-.in::after {
+/* Going back up: revealed from the bottom up */
+.inUp {
+  animation: draw-in-up 900ms var(--ease-out) both;
+}
+
+/* The scan line: a bright line along one edge of a full-size layer, slid across the number,
+   with a soft red trail behind it. The mask fades out its ends. */
+.in::after,
+.inUp::after {
   content: '';
   position: absolute;
   inset: 0;
+  mask-image: linear-gradient(90deg, transparent 4%, #000 24%, #000 76%, transparent 96%);
+}
+
+.in::after {
   background: linear-gradient(
     transparent calc(100% - 1.75rem),
     rgb(255 45 61 / 0.14) calc(100% - 2px),
     var(--red-hot) calc(100% - 2px)
   );
-  mask-image: linear-gradient(90deg, transparent 4%, #000 24%, #000 76%, transparent 96%);
   animation: scan-down 900ms var(--ease-out) both;
+}
+
+.inUp::after {
+  background: linear-gradient(
+    to top,
+    transparent calc(100% - 1.75rem),
+    rgb(255 45 61 / 0.14) calc(100% - 2px),
+    var(--red-hot) calc(100% - 2px)
+  );
+  animation: scan-up 900ms var(--ease-out) both;
 }
 
 .out {
@@ -63,6 +82,15 @@
 @keyframes draw-in {
   from {
     clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes draw-in-up {
+  from {
+    clip-path: inset(100% 0 0 0);
   }
   to {
     clip-path: inset(0);
@@ -82,6 +110,19 @@
   }
 }
 
+@keyframes scan-up {
+  from {
+    transform: translateY(100%);
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
 @keyframes fade-out {
   to {
     opacity: 0;
@@ -89,11 +130,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .in {
+  .in,
+  .inUp {
     animation: none;
   }
 
   .in::after,
+  .inUp::after,
   .out {
     display: none;
   }
