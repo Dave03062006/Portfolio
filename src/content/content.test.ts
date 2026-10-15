@@ -62,6 +62,12 @@ describe('profile', () => {
     expect(isWebUrl(href)).toBe(true)
   })
 
+  it('writes the phone number in +62… form, so calling and WhatsApp work', () => {
+    const { phone } = profile.contact
+    const usable = phone === undefined || /^\+\d{9,15}$/.test(phone.number)
+    expect(usable).toBe(true)
+  })
+
   it('only turns on the CV button once the CV file is in public/', () => {
     const { cvUrl } = profile.contact
     const cvIsReady = cvUrl === '' || existsSync(`public${cvUrl}`)

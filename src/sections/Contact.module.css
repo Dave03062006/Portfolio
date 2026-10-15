@@ -59,6 +59,27 @@
   color: var(--red-label);
 }
 
+/* The WhatsApp button on the phone row: styled like the email row's COPY */
+.whatsapp {
+  min-height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em; /* flex layout drops the space before the ↗, so add it back */
+  padding: 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red-label);
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.whatsapp:hover {
+  color: var(--red-hot);
+}
+
 .cv {
   display: inline-flex;
   align-items: center;

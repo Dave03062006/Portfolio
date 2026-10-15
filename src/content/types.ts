@@ -57,6 +57,8 @@ export type Profile = {
     heading: string
     lead: string
     email: string
+    /** `display` is shown as written; `number` is the same number in +62… form, for calling and WhatsApp. Leave out to hide. */
+    phone?: { display: string; number: string }
     links: ContactLink[]
     /** Path to the CV inside `public/`, e.g. '/cv.pdf'. Set to '' to hide the download button. */
     cvUrl: string

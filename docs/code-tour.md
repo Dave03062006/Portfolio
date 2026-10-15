@@ -423,7 +423,7 @@ Everything is in `src/content/`: `profile.ts` (name, one-liner, bio, spec sheet,
 Save it as `public/images/portrait.jpg`, in portrait shape (4:5). That's it.
 
 ### Show or hide the CV button
-`public/cv.pdf` plus `cvUrl: '/cv.pdf'` in `profile.ts` shows it. `cvUrl: ''` hides it. The CV is git-ignored for now (see the README), so remember to un-ignore it before publishing, or the live site's button won't work.
+`public/cv.pdf` plus `cvUrl: '/cv.pdf'` in `profile.ts` shows it. `cvUrl: ''` hides it. To update your CV, replace the file and push.
 
 ### Hide "Open to internships"
 In `profile.ts`, set `availability: ''`. The pill disappears from the top bar, the phone menu and the intro.

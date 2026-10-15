@@ -38,7 +38,7 @@ Then open http://localhost:5173. When you save a file, the browser updates insta
 
 **Project images.** These are illustrations drawn in `design/project-art/`. After editing one, run `node scripts/render-images.mjs` to regenerate the `.webp` files.
 
-**CV.** The "Download CV" button uses `public/cv.pdf`. That file is currently ignored by git, because the current CV includes a phone number (see `.gitignore`). Before publishing, remove that line from `.gitignore` so the CV gets committed. Otherwise, set `cvUrl: ''` in `profile.ts` to hide the button.
+**CV.** The "Download CV" button uses `public/cv.pdf`. Replace that file to update your CV, or set `cvUrl: ''` in `profile.ts` to hide the button.
 
 ## Commands
 

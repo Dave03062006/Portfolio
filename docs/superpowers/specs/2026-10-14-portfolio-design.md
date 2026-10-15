@@ -157,7 +157,7 @@ Each card shows its course as a small caption. Every project here was a course's
 | INSTAGRAM | @dave_tristian.n | https://www.instagram.com/dave_tristian.n |
 
 - **DOWNLOAD CV ↓** links to `/cv.pdf`. Dave drops his CV PDF into `public/`. The button hides when `profile.cvUrl` is empty.
-- **No phone number** on the site.
+- **Phone:** +62 813 3222 7289, with a WhatsApp link. (Added at Dave's request on 2026-10-15, after first leaving it off for privacy.)
 - **Footer:** "Designed and built by Dave Tristian · 2026 · Made with React"
 
 ## 4. Layout

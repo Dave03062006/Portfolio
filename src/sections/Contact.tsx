@@ -22,6 +22,20 @@ export function Contact() {
             <CopyButton text={contact.email} what="email address" />
           </dd>
         </div>
+        {contact.phone && (
+          <div className={styles.row}>
+            <dt className={styles.label}>Phone</dt>
+            <dd className={styles.value}>
+              <a href={`tel:${contact.phone.number}`} className={styles.link}>
+                {contact.phone.display}
+              </a>
+              {/* wa.me links want the number without the + */}
+              <ExternalLink href={`https://wa.me/${contact.phone.number.slice(1)}`} className={styles.whatsapp}>
+                WhatsApp
+              </ExternalLink>
+            </dd>
+          </div>
+        )}
         {contact.links.map((link) => (
           <div key={link.label} className={styles.row}>
             <dt className={styles.label}>{link.label}</dt>

@@ -40,6 +40,8 @@ export const profile: Profile = {
     heading: "Let's build something.",
     lead: 'Open to internships and collaborations. The fastest way to reach me is email.',
     email: 'dtristian@student.ciputra.ac.id',
+    // Remove this line to take the phone number off the site.
+    phone: { display: '+62 813 3222 7289', number: '+6281332227289' },
     links: [
       {
         label: 'LinkedIn',
